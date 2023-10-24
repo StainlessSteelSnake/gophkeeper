@@ -59,19 +59,16 @@ func (s *Storage) AddUser(ctx context.Context, login, password string) error {
 	return nil
 }
 
-func (s *Storage) GetUser(ctx context.Context, login string) (string, int, error) {
+func (s *Storage) GetUser(ctx context.Context, login string) (passwordHash string, maxRecordId int, err error) {
 	log.Printf("БД. Получение пользователя '%s'.\n", login)
 
 	if login == "" {
 		return "", 0, errors.New("не указан логин пользователя")
 	}
 
-	var passwordHash string
-	var maxRecordId int
-
 	row := s.conn.QueryRow(ctx, sqlSelectUser, login)
 
-	err := row.Scan(&passwordHash, &maxRecordId)
+	err = row.Scan(&passwordHash, &maxRecordId)
 	if err != nil {
 		log.Println("БД. Ошибка при получении пользователя:", err)
 		return "", 0, err

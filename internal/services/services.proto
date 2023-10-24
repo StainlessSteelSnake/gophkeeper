@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "github.com/StainlessSteelSnake/gophkeeper/internal/services";
+
+message LoginPassword {
+  string login = 1;
+  string password = 2;
+}
+
+message Token {
+  string token = 1;
+}
+
+message RegisterRequest {
+  LoginPassword login_password = 1;
+}
+
+message RegisterResponse {
+  Token token = 1;
+}
+
+message LoginRequest {
+  LoginPassword login_password = 1;
+}
+
+message LoginResponse {
+  Token token = 1;
+}
+
+service GophKeeper {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+}
