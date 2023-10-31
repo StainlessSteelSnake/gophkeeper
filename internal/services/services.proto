@@ -29,7 +29,15 @@ message LoginResponse {
   Token token = 1;
 }
 
+message LogoutRequest {
+  Token token = 1;
+}
+
+message LogoutResponse {
+}
+
 service GophKeeper {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
 }

@@ -1,13 +1,18 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"os"
 
+	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"github.com/spf13/cobra"
 )
+
+type Configurator interface {
+	SetToken(string) error
+	GetToken() string
+	SetKeyPhrase(string) error
+	GetKeyPhrase() string
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -19,9 +24,18 @@ var rootCmd = &cobra.Command{
 	- text, files and so on...`,
 }
 
+var client services.GophKeeperClient
+var config Configurator
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(cln services.GophKeeperClient, cfg Configurator) {
+	if cln == nil || cfg == nil {
+		os.Exit(1)
+	}
+	client = cln
+	config = cfg
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

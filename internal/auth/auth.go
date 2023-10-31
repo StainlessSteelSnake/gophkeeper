@@ -37,7 +37,8 @@ type authentication struct {
 type Authenticator interface {
 	Register(context.Context, string, string) (string, error)
 	Login(context.Context, string, string) (string, error)
-	Authenticate(string) (string, error)
+	Authenticate(string) (string, string, error)
+	Logout(string) error
 }
 
 // NewAuthentication создаёт контроллер авторизаций пользователей используя ссылку на хранилище пользователей.
@@ -200,16 +201,16 @@ func (a *authentication) Login(ctx context.Context, login, password string) (str
 }
 
 // Authenticate проверяет переданный токен и возвращает логин пользователя, если токен для него найден.
-func (a *authentication) Authenticate(t string) (string, error) {
+func (a *authentication) Authenticate(t string) (string, string, error) {
 	tokenParts := strings.Split(t, ":")
 	if len(tokenParts) != 2 {
-		return "", errors.New("токен авторизации передан в неправильном формате")
+		return "", "", errors.New("токен авторизации передан в неправильном формате")
 	}
 
 	loginHash := tokenParts[0]
 	userData, userFound := a.users[loginHash]
 	if !userFound {
-		return "", errors.New("указанный пользователь не авторизован")
+		return "", "", errors.New("указанный пользователь не авторизован")
 	}
 
 	var tokenIsValid bool
@@ -221,8 +222,36 @@ func (a *authentication) Authenticate(t string) (string, error) {
 	}
 
 	if !tokenIsValid {
-		return "", errors.New("подпись токена авторизации пользователя не соответствует сохранённой")
+		return "", "", errors.New("подпись токена авторизации пользователя не соответствует сохранённой")
 	}
 
-	return userData.login, nil
+	return userData.login, loginHash, nil
+}
+
+func (a *authentication) Logout(t string) error {
+	login, loginHash, err := a.Authenticate(t)
+	if err != nil {
+		return err
+	}
+
+	user, ok := a.users[loginHash]
+	if !ok {
+		return errors.New("пользователь " + login + " не авторизован")
+	}
+
+	for i, value := range user.tokens {
+		if value == t {
+			if i == 0 {
+				user.tokens = user.tokens[1:]
+			} else if i == len(user.tokens)-1 {
+				user.tokens = user.tokens[:i]
+			} else {
+				user.tokens = append(user.tokens[:i], user.tokens[i+1:]...)
+			}
+
+			break
+		}
+	}
+
+	return nil
 }

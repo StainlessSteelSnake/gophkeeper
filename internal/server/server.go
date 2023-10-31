@@ -89,3 +89,17 @@ func (s *Server) Login(ctx context.Context, in *srs.LoginRequest) (*srs.LoginRes
 	log.Printf("gRPC-Сервер. Вызов сервиса авторизации (Login) успешен. Получен токен: %v, \n", token)
 	return &response, nil
 }
+
+func (s *Server) Logout(ctx context.Context, in *srs.LogoutRequest) (*srs.LogoutResponse, error) {
+	log.Printf("gRPC-Сервер. Вызов сервиса выхода из учётной записи (Logout) со входными данными: %v, \n", in.Token.Token)
+
+	var response = srs.LogoutResponse{}
+
+	err := s.authenticator.Logout(in.Token.Token)
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка авторизации: %v, \n", err)
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	return &response, nil
+}
