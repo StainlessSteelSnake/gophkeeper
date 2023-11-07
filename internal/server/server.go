@@ -95,7 +95,7 @@ func (s *Server) Logout(ctx context.Context, in *srs.LogoutRequest) (*srs.Logout
 
 	var response = srs.LogoutResponse{}
 
-	err := s.authenticator.Logout(in.Token.Token)
+	err := s.authenticator.Logout(ctx, in.Token.Token)
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -109,7 +109,7 @@ func (s *Server) GetUserRecords(ctx context.Context, in *srs.GetUserRecordsReque
 
 	var response = srs.GetUserRecordsResponse{}
 
-	userLogin, _, err := s.authenticator.Authenticate(in.Token.Token)
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -143,7 +143,7 @@ func (s *Server) GetUserRecord(ctx context.Context, in *srs.GetUserRecordRequest
 
 	var response = srs.GetUserRecordResponse{}
 
-	userLogin, _, err := s.authenticator.Authenticate(in.Token.Token)
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -171,7 +171,7 @@ func (s *Server) AddLoginPassword(ctx context.Context, in *srs.AddLoginPasswordR
 
 	var response = srs.AddLoginPasswordResponse{}
 
-	userLogin, _, err := s.authenticator.Authenticate(in.Token.Token)
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -189,8 +189,31 @@ func (s *Server) AddLoginPassword(ctx context.Context, in *srs.AddLoginPasswordR
 		log.Printf("gRPC-Сервер. Ошибка добавления записи c логином и паролем: %s.\n", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	
+
 	response.Id = int32(id)
+
+	return &response, nil
+}
+
+func (s *Server) GetLoginPassword(ctx context.Context, in *srs.GetLoginPasswordRequest) (*srs.GetLoginPasswordResponse, error) {
+	log.Printf("gRPC-Сервер. Вызов сервиса получения записи c логином и паролем (GetLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
+
+	var response = srs.GetLoginPasswordResponse{}
+
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	encryptedLogin, encryptedPassword, err := s.storageController.GetLoginPassword(ctx, userLogin, int(in.Id))
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка получения записи c логином и паролем: %s.\n", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	response.EncryptedLogin = encryptedLogin
+	response.EncryptedPassword = encryptedPassword
 
 	return &response, nil
 }

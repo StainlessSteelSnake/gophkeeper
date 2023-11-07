@@ -22,6 +22,7 @@ type Storager interface {
 	GetRecord(ctx context.Context, userLogin string, id int) (*Record, error)
 
 	AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error)
+	GetLoginPassword(ctx context.Context, userLogin string, id int) ([]byte, []byte, error)
 
 	Close(ctx context.Context)
 }

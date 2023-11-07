@@ -37,8 +37,8 @@ type authentication struct {
 type Authenticator interface {
 	Register(context.Context, string, string) (string, error)
 	Login(context.Context, string, string) (string, error)
-	Authenticate(string) (string, string, error)
-	Logout(string) error
+	Authenticate(context.Context, string) (string, string, error)
+	Logout(context.Context, string) error
 }
 
 // NewAuthentication создаёт контроллер авторизаций пользователей используя ссылку на хранилище пользователей.
@@ -201,7 +201,7 @@ func (a *authentication) Login(ctx context.Context, login, password string) (str
 }
 
 // Authenticate проверяет переданный токен и возвращает логин пользователя, если токен для него найден.
-func (a *authentication) Authenticate(t string) (string, string, error) {
+func (a *authentication) Authenticate(ctx context.Context, t string) (string, string, error) {
 	tokenParts := strings.Split(t, ":")
 	if len(tokenParts) != 2 {
 		return "", "", errors.New("токен авторизации передан в неправильном формате")
@@ -228,8 +228,8 @@ func (a *authentication) Authenticate(t string) (string, string, error) {
 	return userData.login, loginHash, nil
 }
 
-func (a *authentication) Logout(t string) error {
-	login, loginHash, err := a.Authenticate(t)
+func (a *authentication) Logout(ctx context.Context, t string) error {
+	login, loginHash, err := a.Authenticate(ctx, t)
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var id string
+var recordId string
+var recordName string
+var recordMetadata string
 
 var recordCmd = &cobra.Command{
 	Use:   "record",
@@ -69,11 +71,11 @@ var recordShowCmd = &cobra.Command{
 			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
 		}
 
-		if id == "" {
+		if recordId == "" {
 			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
 		}
 
-		recordId, err := strconv.Atoi(id)
+		id, err := strconv.Atoi(recordId)
 		if err != nil {
 			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
 		}
@@ -82,7 +84,7 @@ var recordShowCmd = &cobra.Command{
 			Token: &srs.Token{
 				Token: token,
 			},
-			Id: int32(recordId),
+			Id: int32(id),
 		}
 
 		getUserRecordResponse, err := client.GetUserRecord(context.Background(), &getUserRecordRequest)
@@ -98,7 +100,7 @@ var recordShowCmd = &cobra.Command{
 }
 
 func init() {
-	recordShowCmd.PersistentFlags().StringVarP(&id, "id", "i", "", "The password to log in to the server")
+	recordShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The password to log in to the server")
 
 	recordShowCmd.MarkFlagRequired("id")
 

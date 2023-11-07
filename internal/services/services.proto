@@ -81,6 +81,16 @@ message AddLoginPasswordResponse{
   int32 id = 1;
 }
 
+message GetLoginPasswordRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetLoginPasswordResponse{
+  bytes encrypted_login = 1;
+  bytes encrypted_password = 2;
+}
+
 service GophKeeper {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -90,4 +100,5 @@ service GophKeeper {
   rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
 
   rpc AddLoginPassword(AddLoginPasswordRequest) returns(AddLoginPasswordResponse);
+  rpc GetLoginPassword(GetLoginPasswordRequest) returns(GetLoginPasswordResponse);
 }

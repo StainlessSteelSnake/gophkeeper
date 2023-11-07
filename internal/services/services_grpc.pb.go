@@ -25,6 +25,7 @@ const (
 	GophKeeper_GetUserRecords_FullMethodName   = "/services.GophKeeper/GetUserRecords"
 	GophKeeper_GetUserRecord_FullMethodName    = "/services.GophKeeper/GetUserRecord"
 	GophKeeper_AddLoginPassword_FullMethodName = "/services.GophKeeper/AddLoginPassword"
+	GophKeeper_GetLoginPassword_FullMethodName = "/services.GophKeeper/GetLoginPassword"
 )
 
 // GophKeeperClient is the client API for GophKeeper service.
@@ -37,6 +38,7 @@ type GophKeeperClient interface {
 	GetUserRecords(ctx context.Context, in *GetUserRecordsRequest, opts ...grpc.CallOption) (*GetUserRecordsResponse, error)
 	GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error)
 	AddLoginPassword(ctx context.Context, in *AddLoginPasswordRequest, opts ...grpc.CallOption) (*AddLoginPasswordResponse, error)
+	GetLoginPassword(ctx context.Context, in *GetLoginPasswordRequest, opts ...grpc.CallOption) (*GetLoginPasswordResponse, error)
 }
 
 type gophKeeperClient struct {
@@ -101,6 +103,15 @@ func (c *gophKeeperClient) AddLoginPassword(ctx context.Context, in *AddLoginPas
 	return out, nil
 }
 
+func (c *gophKeeperClient) GetLoginPassword(ctx context.Context, in *GetLoginPasswordRequest, opts ...grpc.CallOption) (*GetLoginPasswordResponse, error) {
+	out := new(GetLoginPasswordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetLoginPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GophKeeperServer is the server API for GophKeeper service.
 // All implementations must embed UnimplementedGophKeeperServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type GophKeeperServer interface {
 	GetUserRecords(context.Context, *GetUserRecordsRequest) (*GetUserRecordsResponse, error)
 	GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error)
 	AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error)
+	GetLoginPassword(context.Context, *GetLoginPasswordRequest) (*GetLoginPasswordResponse, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedGophKeeperServer) GetUserRecord(context.Context, *GetUserReco
 }
 func (UnimplementedGophKeeperServer) AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLoginPassword not implemented")
+}
+func (UnimplementedGophKeeperServer) GetLoginPassword(context.Context, *GetLoginPasswordRequest) (*GetLoginPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoginPassword not implemented")
 }
 func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
@@ -257,6 +272,24 @@ func _GophKeeper_AddLoginPassword_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GophKeeper_GetLoginPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLoginPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetLoginPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetLoginPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetLoginPassword(ctx, req.(*GetLoginPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GophKeeper_ServiceDesc is the grpc.ServiceDesc for GophKeeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddLoginPassword",
 			Handler:    _GophKeeper_AddLoginPassword_Handler,
+		},
+		{
+			MethodName: "GetLoginPassword",
+			Handler:    _GophKeeper_GetLoginPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

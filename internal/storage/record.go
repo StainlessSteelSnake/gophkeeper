@@ -13,14 +13,9 @@ import (
 const (
 	sqlInsertRecord = `
 	INSERT INTO public.user_records(
-	user_login, record_type, Name, Metadata)
-	VALUES ($1, $2, $3, $4, $5, $6)
+	user_login, record_type, name, Metadata)
+	VALUES ($1, $2, $3, $4)
 	RETURNING Id;
-`
-	sqlInsertLoginPassword = `
-	INSERT INTO public.encrypted_passwords(
-	Id, login, password)
-	VALUES ($1, $2, $3);
 `
 	sqlSelectUserRecords = `
 	SELECT Id, record_type, Name 
@@ -31,12 +26,6 @@ const (
 	SELECT Id, record_type, Name, Metadata
 	FROM public.user_records
 	WHERE Id = $1 AND user_login = $2
-`
-	sqlSelectRecordLoginPassword = `
-	SELECT lp.Id, lp.login, lp.password 
-	FROM public.encrypted_passwords as lp 
-	INNER JOIN public.user_records as r ON r.Id = lp.Id
-	WHERE r.Id = $1 AND r.user_login = $2
 `
 
 	recordTypeLoginPassword            = "LOGIN_PASSWORD"
@@ -57,13 +46,6 @@ type Record struct {
 	Metadata   string
 }
 
-/*
-func getUuid() string {
-	uid := uuid.New()
-	return hex.EncodeToString(uid[:])
-}
-*/
-
 func getRecordType(rt string) string {
 	switch rt {
 	case recordTypeLoginPassword:
@@ -83,12 +65,6 @@ func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
 	log.Printf("БД. Добавление в таблицу user_records записи пользователя '%s', типом '%s' и названием '%v'.\n", r.UserLogin, r.RecordType, r.Name)
 
 	var pgErr *pgconn.PgError
-
-	/*
-		if r.uuid == "" {
-			r.uuid = getUuid()
-		}
-	*/
 
 	var recordId int
 
@@ -176,45 +152,4 @@ func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Rec
 
 	log.Printf("БД. Считан запись с Id '%d' для пользователя '%s'.\n", id, userLogin)
 	return &result, nil
-}
-
-func (s *Storage) AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error) {
-	log.Printf("БД. Добавление в таблицу encrypted_passwords записи пользователя '%s' с названием '%v'.\n", userLogin, name)
-	if userLogin == "" {
-		return 0, errors.New("не указан логин пользователя")
-	}
-
-	record := Record{
-		UserLogin:  userLogin,
-		RecordType: recordTypeLoginPassword,
-		Name:       name,
-		Metadata:   metadata,
-	}
-
-	id, err := s.addRecord(ctx, &record)
-	if err != nil {
-		return 0, err
-	}
-
-	var pgErr *pgconn.PgError
-
-	_, err = s.conn.Exec(ctx, sqlInsertLoginPassword, id, login, password)
-
-	if err != nil && !errors.As(err, &pgErr) {
-		log.Printf("БД. Ошибка при добавлении записи в таблицу encrypted_passwords, сообщение: '%s'.\n", err)
-		return 0, err
-	}
-
-	if err != nil && pgErr.Code != pgerrcode.UniqueViolation {
-		log.Printf("БД. Ошибка при добавлении записи в таблицу encrypted_passwords, код '%s', сообщение: '%s'.\n", pgErr.Code, pgErr.Error())
-		return 0, err
-	}
-
-	if err != nil {
-		log.Printf("БД. Ошибка при попытке добавления дублирующей записи в таблицу encrypted_passwords c Id '%d', код '%s', сообщение: '%s'.\n", id, pgErr.Code, pgErr.Error())
-		return 0, err
-	}
-
-	log.Printf("БД. В таблицу encrypted_passwords добавлена запись с Id '%d'.\n", id)
-	return 0, nil
 }
