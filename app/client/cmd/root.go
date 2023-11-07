@@ -24,6 +24,12 @@ var rootCmd = &cobra.Command{
 	- text, files and so on...`,
 }
 
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Shows current version and build date/time of GophKeeper",
+	Long:  "Shows current version and build date/time of GophKeeper.",
+}
+
 var client services.GophKeeperClient
 var config Configurator
 
@@ -35,6 +41,8 @@ func Execute(cln services.GophKeeperClient, cfg Configurator) {
 	}
 	client = cln
 	config = cfg
+
+	rootCmd.AddCommand(versionCmd)
 
 	err := rootCmd.Execute()
 	if err != nil {

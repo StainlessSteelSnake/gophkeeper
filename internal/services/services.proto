@@ -36,8 +36,58 @@ message LogoutRequest {
 message LogoutResponse {
 }
 
+message GetUserRecordsRequest {
+  Token token = 1;
+}
+
+message UserRecord {
+  int32 id = 1;
+  string user_login = 2;
+  string record_type = 3;
+  string name = 4;
+  string metadata = 5;
+}
+
+message GetUserRecordsResponse {
+  repeated UserRecord user_records = 1;
+}
+
+message GetUserRecordRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetUserRecordResponse {
+  UserRecord user_record = 1;
+}
+
+message RecordNameMetadata {
+  string name = 1;
+  string metadata = 2;
+}
+
+message EncryptedLoginPassword {
+  bytes encrypted_login = 1;
+  bytes encrypted_password = 2;
+}
+
+message AddLoginPasswordRequest{
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  EncryptedLoginPassword encrypted_login_password = 3;
+}
+
+message AddLoginPasswordResponse{
+  int32 id = 1;
+}
+
 service GophKeeper {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+
+  rpc GetUserRecords(GetUserRecordsRequest) returns (GetUserRecordsResponse);
+  rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
+
+  rpc AddLoginPassword(AddLoginPasswordRequest) returns(AddLoginPasswordResponse);
 }

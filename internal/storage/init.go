@@ -19,13 +19,12 @@ const (
 	sqlCreateTableUserRecords = `
 		CREATE TABLE IF NOT EXISTS public.user_records
 		(
-			uuid uuid NOT NULL,
-			user_login character varying COLLATE pg_catalog."default" NOT NULL,
-			id integer NOT NULL DEFAULT 0,
-			record_type character varying(20) COLLATE pg_catalog."default" NOT NULL,
-			name character varying COLLATE pg_catalog."default" NOT NULL,
-			metadata text COLLATE pg_catalog."default",
-			CONSTRAINT user_records_pkey PRIMARY KEY (uuid)
+			Id serial NOT NULL,
+    		user_login character varying COLLATE pg_catalog."default" NOT NULL,
+    		record_type character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    		Name character varying COLLATE pg_catalog."default" NOT NULL,
+    		Metadata text COLLATE pg_catalog."default",
+    		CONSTRAINT user_records_pkey PRIMARY KEY (Id)
 		)
 
 		TABLESPACE pg_default;`
@@ -33,10 +32,10 @@ const (
 	sqlCreateTableEncryptedPasswords = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_passwords
 		(
-			uuid uuid NOT NULL,
+			Id integer NOT NULL,
 			login bytea NOT NULL,
 			password bytea NOT NULL,
-			CONSTRAINT encrypted_passwords_pkey PRIMARY KEY (uuid)
+			CONSTRAINT encrypted_passwords_pkey PRIMARY KEY (Id)
 		)
 
 		TABLESPACE pg_default;`
@@ -44,9 +43,9 @@ const (
 	sqlCreateTableEncryptedTexts = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_texts
 		(
-			uuid uuid NOT NULL,
+			Id integer NOT NULL,
 			text_data bytea NOT NULL,
-			CONSTRAINT encrypted_texts_pkey PRIMARY KEY (uuid)
+			CONSTRAINT encrypted_texts_pkey PRIMARY KEY (Id)
 		)
 
 		TABLESPACE pg_default;`
@@ -54,9 +53,9 @@ const (
 	sqlCreateTableEncryptedBinaries = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_binaries
 		(
-			uuid uuid NOT NULL,
+			Id integer NOT NULL,
 			binary_data bytea NOT NULL,
-			CONSTRAINT encrypted_binaries_pkey PRIMARY KEY (uuid)
+			CONSTRAINT encrypted_binaries_pkey PRIMARY KEY (Id)
 		)
 		
 		TABLESPACE pg_default;`
@@ -64,13 +63,13 @@ const (
 	sqlCreateTableEncryptedCards = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_cards
 		(
-			uuid uuid NOT NULL,
+			Id integer NOT NULL,
 			card_number bytea NOT NULL,
 			card_holder bytea NOT NULL,
 			expiry_year bytea NOT NULL,
 			expiry_month bytea NOT NULL,
 			cvc bytea NOT NULL,
-			CONSTRAINT encrypted_cards_pkey PRIMARY KEY (uuid)
+			CONSTRAINT encrypted_cards_pkey PRIMARY KEY (Id)
 		)
 		
 		TABLESPACE pg_default;`

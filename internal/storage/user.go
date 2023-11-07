@@ -18,7 +18,7 @@ const (
 	VALUES ($1, $2)`
 
 	sqlSelectUser = `
-	SELECT u.password, COALESCE(max(r.id), 0)
+	SELECT u.password, COALESCE(max(r.Id), 0)
 	FROM public.users AS u 
 	LEFT JOIN public.user_records AS r ON u.login = r.user_login
 	WHERE login = $1

@@ -19,9 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GophKeeper_Register_FullMethodName = "/services.GophKeeper/Register"
-	GophKeeper_Login_FullMethodName    = "/services.GophKeeper/Login"
-	GophKeeper_Logout_FullMethodName   = "/services.GophKeeper/Logout"
+	GophKeeper_Register_FullMethodName         = "/services.GophKeeper/Register"
+	GophKeeper_Login_FullMethodName            = "/services.GophKeeper/Login"
+	GophKeeper_Logout_FullMethodName           = "/services.GophKeeper/Logout"
+	GophKeeper_GetUserRecords_FullMethodName   = "/services.GophKeeper/GetUserRecords"
+	GophKeeper_GetUserRecord_FullMethodName    = "/services.GophKeeper/GetUserRecord"
+	GophKeeper_AddLoginPassword_FullMethodName = "/services.GophKeeper/AddLoginPassword"
 )
 
 // GophKeeperClient is the client API for GophKeeper service.
@@ -31,6 +34,9 @@ type GophKeeperClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	GetUserRecords(ctx context.Context, in *GetUserRecordsRequest, opts ...grpc.CallOption) (*GetUserRecordsResponse, error)
+	GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error)
+	AddLoginPassword(ctx context.Context, in *AddLoginPasswordRequest, opts ...grpc.CallOption) (*AddLoginPasswordResponse, error)
 }
 
 type gophKeeperClient struct {
@@ -68,6 +74,33 @@ func (c *gophKeeperClient) Logout(ctx context.Context, in *LogoutRequest, opts .
 	return out, nil
 }
 
+func (c *gophKeeperClient) GetUserRecords(ctx context.Context, in *GetUserRecordsRequest, opts ...grpc.CallOption) (*GetUserRecordsResponse, error) {
+	out := new(GetUserRecordsResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetUserRecords_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error) {
+	out := new(GetUserRecordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetUserRecord_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) AddLoginPassword(ctx context.Context, in *AddLoginPasswordRequest, opts ...grpc.CallOption) (*AddLoginPasswordResponse, error) {
+	out := new(AddLoginPasswordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_AddLoginPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GophKeeperServer is the server API for GophKeeper service.
 // All implementations must embed UnimplementedGophKeeperServer
 // for forward compatibility
@@ -75,6 +108,9 @@ type GophKeeperServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	GetUserRecords(context.Context, *GetUserRecordsRequest) (*GetUserRecordsResponse, error)
+	GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error)
+	AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
 
@@ -90,6 +126,15 @@ func (UnimplementedGophKeeperServer) Login(context.Context, *LoginRequest) (*Log
 }
 func (UnimplementedGophKeeperServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedGophKeeperServer) GetUserRecords(context.Context, *GetUserRecordsRequest) (*GetUserRecordsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecords not implemented")
+}
+func (UnimplementedGophKeeperServer) GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecord not implemented")
+}
+func (UnimplementedGophKeeperServer) AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddLoginPassword not implemented")
 }
 func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
@@ -158,6 +203,60 @@ func _GophKeeper_Logout_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GophKeeper_GetUserRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetUserRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetUserRecords_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetUserRecords(ctx, req.(*GetUserRecordsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_GetUserRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetUserRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetUserRecord_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetUserRecord(ctx, req.(*GetUserRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_AddLoginPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddLoginPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).AddLoginPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_AddLoginPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).AddLoginPassword(ctx, req.(*AddLoginPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GophKeeper_ServiceDesc is the grpc.ServiceDesc for GophKeeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +275,18 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _GophKeeper_Logout_Handler,
+		},
+		{
+			MethodName: "GetUserRecords",
+			Handler:    _GophKeeper_GetUserRecords_Handler,
+		},
+		{
+			MethodName: "GetUserRecord",
+			Handler:    _GophKeeper_GetUserRecord_Handler,
+		},
+		{
+			MethodName: "AddLoginPassword",
+			Handler:    _GophKeeper_AddLoginPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
