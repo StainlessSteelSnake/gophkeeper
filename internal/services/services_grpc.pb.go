@@ -19,13 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GophKeeper_Register_FullMethodName         = "/services.GophKeeper/Register"
-	GophKeeper_Login_FullMethodName            = "/services.GophKeeper/Login"
-	GophKeeper_Logout_FullMethodName           = "/services.GophKeeper/Logout"
-	GophKeeper_GetUserRecords_FullMethodName   = "/services.GophKeeper/GetUserRecords"
-	GophKeeper_GetUserRecord_FullMethodName    = "/services.GophKeeper/GetUserRecord"
-	GophKeeper_AddLoginPassword_FullMethodName = "/services.GophKeeper/AddLoginPassword"
-	GophKeeper_GetLoginPassword_FullMethodName = "/services.GophKeeper/GetLoginPassword"
+	GophKeeper_Register_FullMethodName            = "/services.GophKeeper/Register"
+	GophKeeper_Login_FullMethodName               = "/services.GophKeeper/Login"
+	GophKeeper_Logout_FullMethodName              = "/services.GophKeeper/Logout"
+	GophKeeper_GetUserRecords_FullMethodName      = "/services.GophKeeper/GetUserRecords"
+	GophKeeper_GetUserRecord_FullMethodName       = "/services.GophKeeper/GetUserRecord"
+	GophKeeper_AddLoginPassword_FullMethodName    = "/services.GophKeeper/AddLoginPassword"
+	GophKeeper_GetLoginPassword_FullMethodName    = "/services.GophKeeper/GetLoginPassword"
+	GophKeeper_ChangeLoginPassword_FullMethodName = "/services.GophKeeper/ChangeLoginPassword"
+	GophKeeper_AddBankCard_FullMethodName         = "/services.GophKeeper/AddBankCard"
+	GophKeeper_GetBankCard_FullMethodName         = "/services.GophKeeper/GetBankCard"
+	GophKeeper_ChangeBankCard_FullMethodName      = "/services.GophKeeper/ChangeBankCard"
 )
 
 // GophKeeperClient is the client API for GophKeeper service.
@@ -39,6 +43,10 @@ type GophKeeperClient interface {
 	GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error)
 	AddLoginPassword(ctx context.Context, in *AddLoginPasswordRequest, opts ...grpc.CallOption) (*AddLoginPasswordResponse, error)
 	GetLoginPassword(ctx context.Context, in *GetLoginPasswordRequest, opts ...grpc.CallOption) (*GetLoginPasswordResponse, error)
+	ChangeLoginPassword(ctx context.Context, in *ChangeLoginPasswordRequest, opts ...grpc.CallOption) (*ChangeLoginPasswordResponse, error)
+	AddBankCard(ctx context.Context, in *AddBankCardRequest, opts ...grpc.CallOption) (*AddBankCardResponse, error)
+	GetBankCard(ctx context.Context, in *GetBankCardRequest, opts ...grpc.CallOption) (*GetBankCardResponse, error)
+	ChangeBankCard(ctx context.Context, in *ChangeBankCardRequest, opts ...grpc.CallOption) (*ChangeBankCardResponse, error)
 }
 
 type gophKeeperClient struct {
@@ -112,6 +120,42 @@ func (c *gophKeeperClient) GetLoginPassword(ctx context.Context, in *GetLoginPas
 	return out, nil
 }
 
+func (c *gophKeeperClient) ChangeLoginPassword(ctx context.Context, in *ChangeLoginPasswordRequest, opts ...grpc.CallOption) (*ChangeLoginPasswordResponse, error) {
+	out := new(ChangeLoginPasswordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_ChangeLoginPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) AddBankCard(ctx context.Context, in *AddBankCardRequest, opts ...grpc.CallOption) (*AddBankCardResponse, error) {
+	out := new(AddBankCardResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_AddBankCard_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) GetBankCard(ctx context.Context, in *GetBankCardRequest, opts ...grpc.CallOption) (*GetBankCardResponse, error) {
+	out := new(GetBankCardResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetBankCard_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) ChangeBankCard(ctx context.Context, in *ChangeBankCardRequest, opts ...grpc.CallOption) (*ChangeBankCardResponse, error) {
+	out := new(ChangeBankCardResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_ChangeBankCard_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GophKeeperServer is the server API for GophKeeper service.
 // All implementations must embed UnimplementedGophKeeperServer
 // for forward compatibility
@@ -123,6 +167,10 @@ type GophKeeperServer interface {
 	GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error)
 	AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error)
 	GetLoginPassword(context.Context, *GetLoginPasswordRequest) (*GetLoginPasswordResponse, error)
+	ChangeLoginPassword(context.Context, *ChangeLoginPasswordRequest) (*ChangeLoginPasswordResponse, error)
+	AddBankCard(context.Context, *AddBankCardRequest) (*AddBankCardResponse, error)
+	GetBankCard(context.Context, *GetBankCardRequest) (*GetBankCardResponse, error)
+	ChangeBankCard(context.Context, *ChangeBankCardRequest) (*ChangeBankCardResponse, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
 
@@ -150,6 +198,18 @@ func (UnimplementedGophKeeperServer) AddLoginPassword(context.Context, *AddLogin
 }
 func (UnimplementedGophKeeperServer) GetLoginPassword(context.Context, *GetLoginPasswordRequest) (*GetLoginPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLoginPassword not implemented")
+}
+func (UnimplementedGophKeeperServer) ChangeLoginPassword(context.Context, *ChangeLoginPasswordRequest) (*ChangeLoginPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeLoginPassword not implemented")
+}
+func (UnimplementedGophKeeperServer) AddBankCard(context.Context, *AddBankCardRequest) (*AddBankCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddBankCard not implemented")
+}
+func (UnimplementedGophKeeperServer) GetBankCard(context.Context, *GetBankCardRequest) (*GetBankCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBankCard not implemented")
+}
+func (UnimplementedGophKeeperServer) ChangeBankCard(context.Context, *ChangeBankCardRequest) (*ChangeBankCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeBankCard not implemented")
 }
 func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
@@ -290,6 +350,78 @@ func _GophKeeper_GetLoginPassword_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GophKeeper_ChangeLoginPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeLoginPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ChangeLoginPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ChangeLoginPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ChangeLoginPassword(ctx, req.(*ChangeLoginPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_AddBankCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddBankCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).AddBankCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_AddBankCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).AddBankCard(ctx, req.(*AddBankCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_GetBankCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBankCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetBankCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetBankCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetBankCard(ctx, req.(*GetBankCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_ChangeBankCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeBankCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ChangeBankCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ChangeBankCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ChangeBankCard(ctx, req.(*ChangeBankCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GophKeeper_ServiceDesc is the grpc.ServiceDesc for GophKeeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +456,22 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLoginPassword",
 			Handler:    _GophKeeper_GetLoginPassword_Handler,
+		},
+		{
+			MethodName: "ChangeLoginPassword",
+			Handler:    _GophKeeper_ChangeLoginPassword_Handler,
+		},
+		{
+			MethodName: "AddBankCard",
+			Handler:    _GophKeeper_AddBankCard_Handler,
+		},
+		{
+			MethodName: "GetBankCard",
+			Handler:    _GophKeeper_GetBankCard_Handler,
+		},
+		{
+			MethodName: "ChangeBankCard",
+			Handler:    _GophKeeper_ChangeBankCard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

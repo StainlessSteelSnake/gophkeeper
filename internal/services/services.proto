@@ -13,6 +13,27 @@ message Token {
   string token = 1;
 }
 
+message EncryptedLoginPassword {
+  bytes encrypted_login = 1;
+  bytes encrypted_password = 2;
+}
+
+message UserRecord {
+  int32 id = 1;
+  string user_login = 2;
+  string record_type = 3;
+  string name = 4;
+  string metadata = 5;
+}
+
+message EncryptedBankCard {
+  bytes card_number = 1;
+  bytes card_holder = 2;
+  bytes expiry_year = 3;
+  bytes expiry_month = 4;
+  bytes cvc = 5;
+}
+
 message RegisterRequest {
   LoginPassword login_password = 1;
 }
@@ -40,14 +61,6 @@ message GetUserRecordsRequest {
   Token token = 1;
 }
 
-message UserRecord {
-  int32 id = 1;
-  string user_login = 2;
-  string record_type = 3;
-  string name = 4;
-  string metadata = 5;
-}
-
 message GetUserRecordsResponse {
   repeated UserRecord user_records = 1;
 }
@@ -66,11 +79,6 @@ message RecordNameMetadata {
   string metadata = 2;
 }
 
-message EncryptedLoginPassword {
-  bytes encrypted_login = 1;
-  bytes encrypted_password = 2;
-}
-
 message AddLoginPasswordRequest{
   Token token = 1;
   RecordNameMetadata name_metadata = 2;
@@ -87,8 +95,44 @@ message GetLoginPasswordRequest{
 }
 
 message GetLoginPasswordResponse{
-  bytes encrypted_login = 1;
-  bytes encrypted_password = 2;
+    EncryptedLoginPassword encrypted_login_password = 1;
+}
+
+message ChangeLoginPasswordRequest{
+  Token token = 1;
+  int32 id = 2;
+  EncryptedLoginPassword encrypted_login_password = 3;
+}
+
+message ChangeLoginPasswordResponse{
+}
+
+message AddBankCardRequest{
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  EncryptedBankCard encrypted_bank_card = 3;
+}
+
+message AddBankCardResponse{
+  int32 id = 1;
+}
+
+message GetBankCardRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetBankCardResponse{
+  EncryptedBankCard encrypted_bank_card = 1;
+}
+
+message ChangeBankCardRequest{
+  Token token = 1;
+  int32 id = 2;
+  EncryptedBankCard encrypted_bank_card = 3;
+}
+
+message ChangeBankCardResponse{
 }
 
 service GophKeeper {
@@ -101,4 +145,9 @@ service GophKeeper {
 
   rpc AddLoginPassword(AddLoginPasswordRequest) returns(AddLoginPasswordResponse);
   rpc GetLoginPassword(GetLoginPasswordRequest) returns(GetLoginPasswordResponse);
+  rpc ChangeLoginPassword(ChangeLoginPasswordRequest) returns(ChangeLoginPasswordResponse);
+
+  rpc AddBankCard(AddBankCardRequest) returns(AddBankCardResponse);
+  rpc GetBankCard(GetBankCardRequest) returns(GetBankCardResponse);
+  rpc ChangeBankCard(ChangeBankCardRequest) returns(ChangeBankCardResponse);
 }

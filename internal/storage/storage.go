@@ -23,6 +23,11 @@ type Storager interface {
 
 	AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error)
 	GetLoginPassword(ctx context.Context, userLogin string, id int) ([]byte, []byte, error)
+	ChangeLoginPassword(ctx context.Context, userLogin string, id int, login []byte, password []byte) error
+
+	AddBankCard(ctx context.Context, userLogin string, name string, bankCard *BankCard, metadata string) (int, error)
+	GetBankCard(ctx context.Context, userLogin string, id int) (*BankCard, error)
+	ChangeBankCard(ctx context.Context, userLogin string, id int, bankCard *BankCard) error
 
 	Close(ctx context.Context)
 }

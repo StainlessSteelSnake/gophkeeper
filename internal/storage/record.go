@@ -97,21 +97,20 @@ func (s *Storage) GetRecords(ctx context.Context, userLogin string) ([]Record, e
 		return nil, errors.New("не указан логин пользователя")
 	}
 
-	row := s.conn.QueryRow(ctx, sqlSelectUserRecords, userLogin)
-
 	result := make([]Record, 0)
 
-	for {
+	rows, err := s.conn.Query(ctx, sqlSelectUserRecords, userLogin)
+	if err == pgx.ErrNoRows {
+		log.Printf("Записи для пользователя '%s' не найдены.\n", userLogin)
+		return result, nil
+	}
+
+	for rows.Next() {
 		record := Record{
 			UserLogin: userLogin,
 		}
 
-		err := row.Scan(&record.Id, &record.RecordType, &record.Name)
-
-		if err == pgx.ErrNoRows {
-			break
-		}
-
+		err := rows.Scan(&record.Id, &record.RecordType, &record.Name)
 		if err != nil {
 			log.Printf("БД. Ошибка при попытке получения списка записей пользователя '%s', сообщение: '%s'.\n", userLogin, err)
 			return nil, err

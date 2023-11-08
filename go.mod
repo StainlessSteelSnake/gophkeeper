@@ -3,7 +3,6 @@ module github.com/StainlessSteelSnake/gophkeeper
 go 1.19
 
 require (
-	github.com/google/uuid v1.4.0
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/spf13/cobra v1.7.0

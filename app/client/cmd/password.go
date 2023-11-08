@@ -131,18 +131,86 @@ var passwordShowCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		decryptedLogin, err := decryptor.Decode(getLoginPasswordResponse.EncryptedLogin)
+		decryptedLogin, err := decryptor.Decode(getLoginPasswordResponse.EncryptedLoginPassword.EncryptedLogin)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		decryptedPassword, err := decryptor.Decode(getLoginPasswordResponse.EncryptedPassword)
+		decryptedPassword, err := decryptor.Decode(getLoginPasswordResponse.EncryptedLoginPassword.EncryptedPassword)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		fmt.Println("Полученный логин:", string(decryptedLogin))
 		fmt.Println("Полученный пароль:", string(decryptedPassword))
+	},
+}
+
+var passwordChangeCmd = &cobra.Command{
+	Use:   "change",
+	Short: "Change existing login and password.",
+	Long:  `Change existing login and password.`,
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		token := config.GetToken()
+		if token == "" {
+			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+		}
+
+		if recordId == "" {
+			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+		}
+
+		id, err := strconv.Atoi(recordId)
+		if err != nil {
+			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+		}
+
+		if storedLogin == "" && storedPassword == "" {
+			log.Fatalln(errors.New("не указаны логин и пароль для изменения"))
+		}
+
+		keyPhrase := config.GetKeyPhrase()
+		encryptor := coder.NewCoder()
+
+		err = encryptor.SetKeyHex(keyPhrase)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		var encryptedLogin, encryptedPassword []byte
+
+		if storedLogin != "" {
+			encryptedLogin, err = encryptor.Encode([]byte(storedLogin))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+
+		if storedPassword != "" {
+			encryptedPassword, err = encryptor.Encode([]byte(storedPassword))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+
+		changeLoginPasswordRequest := srs.ChangeLoginPasswordRequest{
+			Token: &srs.Token{
+				Token: token,
+			},
+			Id: int32(id),
+			EncryptedLoginPassword: &srs.EncryptedLoginPassword{
+				EncryptedLogin:    encryptedLogin,
+				EncryptedPassword: encryptedPassword,
+			},
+		}
+
+		_, err = client.ChangeLoginPassword(context.Background(), &changeLoginPasswordRequest)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Printf("Запись с ID %d изменена.\n", id)
 	},
 }
 
@@ -157,9 +225,15 @@ func init() {
 	passwordAddCmd.MarkFlagRequired("name")
 
 	passwordShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with login and password")
-	passwordShowCmd.MarkFlagRequired("recordId")
+	passwordShowCmd.MarkFlagRequired("id")
+
+	passwordChangeCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with login and password")
+	passwordChangeCmd.PersistentFlags().StringVarP(&storedLogin, "login", "l", "", "A login to store")
+	passwordChangeCmd.PersistentFlags().StringVarP(&storedPassword, "password", "p", "", "A password to store")
+	passwordChangeCmd.MarkFlagRequired("id")
 
 	passwordCmd.AddCommand(passwordAddCmd)
 	passwordCmd.AddCommand(passwordShowCmd)
+	passwordCmd.AddCommand(passwordChangeCmd)
 	rootCmd.AddCommand(passwordCmd)
 }

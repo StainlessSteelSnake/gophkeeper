@@ -21,6 +21,12 @@ const (
 	INNER JOIN public.user_records as r ON r.Id = lp.Id
 	WHERE r.Id = $1 AND r.user_login = $2
 `
+	sqlUpdateRecordLoginPassword = `
+	UPDATE public.encrypted_passwords as lp
+	SET login=$3, password=$4
+	FROM public.user_records as r
+	WHERE r.id = lp.id AND r.id=$1 AND r.user_login =$2
+`
 )
 
 func (s *Storage) AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error) {
@@ -77,8 +83,24 @@ func (s *Storage) GetLoginPassword(ctx context.Context, userLogin string, id int
 
 	err := row.Scan(&storedLogin, &storedPassword)
 	if err != nil {
+		log.Printf("БД. Ошибка при чтении записи о логине и пароле из таблицы encrypted_passwords c Id '%d', сообщение: '%s'.\n", id, err)
 		return nil, nil, err
 	}
 
 	return storedLogin, storedPassword, nil
+}
+
+func (s *Storage) ChangeLoginPassword(ctx context.Context, userLogin string, id int, login []byte, password []byte) error {
+	log.Printf("БД. Обновление записи о логине и пароле в таблице encrypted_passwords, пользователь '%s', ID записи '%d'.\n", userLogin, id)
+	if userLogin == "" {
+		return errors.New("не указан логин пользователя")
+	}
+
+	_, err := s.conn.Exec(ctx, sqlUpdateRecordLoginPassword, id, userLogin, login, password)
+	if err != nil {
+		log.Printf("БД. Ошибка при попытке обновления записи о логине и пароле в таблице encrypted_passwords c Id '%d', сообщение: '%s'.\n", id, err)
+		return err
+	}
+
+	return nil
 }

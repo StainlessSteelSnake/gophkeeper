@@ -21,3 +21,7 @@
 go.work
 /vendor/
 /gophkeeper.yaml
+.DS_Store
+.DS_Store
+app/.DS_Store
+app/client/.DS_Store

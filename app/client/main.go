@@ -1,12 +1,5 @@
 package main
 
-//go:generate GOOS=windows GOARCH=386 build -o app/client/bin/windows/gophkeeper-win32 app/client/main.go
-//go:generate GOOS=windows GOARCH=amd64 go build -o bin/windows/gophkeeper-win64 app/client/main.go
-//go:generate GOOS=linux GOARCH=386 go build -o bin/linux/gophkeeper-linux32 app/client/main.go
-//go:generate GOOS=linux GOARCH=amd64 go build -o bin/linux/gophkeeper-linux64 app/client/main.go
-//go:generate GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Version=v1.0.1 -X 'main.BuildTime=$(date +'%d.%m.%Y %H:%M:%S')'" -o app/client/bin/macos/gophkeeper-mac-i86_64 app/client/main.go
-//go:generate GOOS=darwin GOARCH=arm64 go build -o bin/macos/gophkeeper-mac-arm64 app/client/main.go
-
 import (
 	"fmt"
 	"log"
@@ -17,6 +10,19 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+//go:generate go env -w GOARCH=386 GOOS=windows
+//go:generate go build -o bin/windows/gophkeeper-win32.exe main.go
+//go:generate go env -w GOARCH=amd64 GOOS=windows
+//go:generate go build -o bin/windows/gophkeeper-win64.exe main.go
+//go:generate go env -w GOARCH=386 GOOS=linux
+//go:generate go build -o bin/linux/gophkeeper-linux32 main.go
+//go:generate go env -w GOARCH=amd64 GOOS=linux
+//go:generate go build -o bin/linux/gophkeeper-linux64 main.go
+//go:generate go env -w GOARCH=amd64 GOOS=darwin
+//go:generate go build -ldflags "-X main.Version=v1.0.1 -X 'main.BuildTime=$(date +'%d.%m.%Y %H:%M:%S')'" -o bin/macos/gophkeeper-mac-i86_64 main.go
+//go:generate go env -w GOARCH=arm64 GOOS=darwin
+//go:generate go build -o bin/macos/gophkeeper-mac-arm64 main.go
 
 var (
 	Version   string
