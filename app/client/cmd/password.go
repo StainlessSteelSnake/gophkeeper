@@ -25,7 +25,7 @@ var passwordAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new login and password to the storage.",
 	Long:  `Add new login and password to the storage.`,
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {

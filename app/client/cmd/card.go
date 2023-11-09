@@ -24,7 +24,7 @@ var cardAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new bank card to the storage.",
 	Long:  `Add new bank card to the storage.`,
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
@@ -333,15 +333,15 @@ func init() {
 	cardAddCmd.MarkFlagRequired("cvc")
 	cardAddCmd.MarkFlagRequired("name")
 
-	cardShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with login and password")
+	cardShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with a bank card data")
 	cardShowCmd.MarkFlagRequired("id")
 
-	cardChangeCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with login and password")
-	cardChangeCmd.PersistentFlags().StringVar(&storedCardNumber, "number", "", "A login to store")
-	cardChangeCmd.PersistentFlags().StringVar(&storedCardHolder, "holder", "", "A password to store")
-	cardChangeCmd.PersistentFlags().StringVar(&storedCardExpiryYear, "year", "", "A name of stored record")
-	cardChangeCmd.PersistentFlags().StringVar(&storedCardExpiryMonth, "month", "", "A name of stored record")
-	cardChangeCmd.PersistentFlags().StringVar(&storedCardCvc, "cvc", "", "A name of stored record")
+	cardChangeCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with a bank card data")
+	cardChangeCmd.PersistentFlags().StringVar(&storedCardNumber, "number", "", "A card number to store")
+	cardChangeCmd.PersistentFlags().StringVar(&storedCardHolder, "holder", "", "A card holder to store")
+	cardChangeCmd.PersistentFlags().StringVar(&storedCardExpiryYear, "year", "", "An expiration year to store")
+	cardChangeCmd.PersistentFlags().StringVar(&storedCardExpiryMonth, "month", "", "An expiration month to store")
+	cardChangeCmd.PersistentFlags().StringVar(&storedCardCvc, "cvc", "", "A CVC/CVV to store")
 	cardChangeCmd.MarkFlagRequired("id")
 
 	cardCmd.AddCommand(cardAddCmd)

@@ -13,17 +13,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var textCmd = &cobra.Command{
-	Use:   "text",
-	Short: "Adds, shows and changes stored texts.",
-	Long:  `Adds, shows and changes stored texts.`,
+var binaryCmd = &cobra.Command{
+	Use:   "binary",
+	Short: "Adds, shows and changes stored binary data.",
+	Long:  `Adds, shows and changes stored binary data.`,
 }
 
-var textAddCmd = &cobra.Command{
+var binaryAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Add new text to the storage.",
-	Long:  `Add new text to the storage.`,
-	Args:  cobra.MaximumNArgs(1),
+	Short: "Add new binary data to the storage.",
+	Long:  `Add new binary data to the storage.`,
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
@@ -34,9 +34,9 @@ var textAddCmd = &cobra.Command{
 			log.Fatalln(errors.New("не указано название сохраняемой записи"))
 		}
 
-		text := inout.ReadStringAsBytes()
-		if len(text) == 0 {
-			log.Fatalln(errors.New("не передан текст для сохранения"))
+		binary := inout.ReadBytes()
+		if len(binary) == 0 {
+			log.Fatalln(errors.New("не переданы бинарные данные для сохранения"))
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -47,35 +47,35 @@ var textAddCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		encryptedText, err := encryptor.Encode(text)
+		encryptedBytes, err := encryptor.Encode(binary)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		addTextRequest := srs.AddTextRequest{
+		addBytesRequest := srs.AddBytesRequest{
 			Token: &srs.Token{
 				Token: token,
 			},
-			EncryptedText: encryptedText,
+			EncryptedBytes: encryptedBytes,
 			NameMetadata: &srs.RecordNameMetadata{
 				Name:     recordName,
 				Metadata: recordMetadata,
 			},
 		}
 
-		addTextResponse, err := client.AddText(context.Background(), &addTextRequest)
+		addBytesResponse, err := client.AddBytes(context.Background(), &addBytesRequest)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		fmt.Println("Запись сохранена с ID", addTextResponse.Id)
+		fmt.Println("Запись сохранена с ID", addBytesResponse.Id)
 	},
 }
 
-var textShowCmd = &cobra.Command{
+var binaryShowCmd = &cobra.Command{
 	Use:   "show",
-	Short: "Show stored text.",
-	Long:  `Show stored text with specified ID.`,
+	Short: "Show stored binary data.",
+	Long:  `Show stored binary data with specified ID.`,
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
@@ -100,33 +100,31 @@ var textShowCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		getTextRequest := srs.GetTextRequest{
+		getBytesRequest := srs.GetBytesRequest{
 			Token: &srs.Token{
 				Token: token,
 			},
 			Id: int32(id),
 		}
 
-		getTextResponse, err := client.GetText(context.Background(), &getTextRequest)
+		getBytesResponse, err := client.GetBytes(context.Background(), &getBytesRequest)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		decryptedText, err := decryptor.Decode(getTextResponse.EncryptedText)
+		decryptedBytes, err := decryptor.Decode(getBytesResponse.EncryptedBytes)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		fmt.Println("Полученный текст приведён ниже")
-		fmt.Println("------------------------------")
-		inout.WriteBytes(decryptedText)
+		inout.WriteBytes(decryptedBytes)
 	},
 }
 
-var textChangeCmd = &cobra.Command{
+var binaryChangeCmd = &cobra.Command{
 	Use:   "change",
-	Short: "Change existing text.",
-	Long:  `Change existing text.`,
+	Short: "Change existing binary data.",
+	Long:  `Change existing binary data.`,
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
@@ -143,9 +141,9 @@ var textChangeCmd = &cobra.Command{
 			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
 		}
 
-		text := inout.ReadStringAsBytes()
-		if len(text) == 0 {
-			log.Fatalln(errors.New("не передан текст для изменения"))
+		binary := inout.ReadBytes()
+		if len(binary) == 0 {
+			log.Fatalln(errors.New("не переданы бинарные данные для изменения"))
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -156,20 +154,20 @@ var textChangeCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		encryptedText, err := encryptor.Encode(text)
+		encryptedBytes, err := encryptor.Encode(binary)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		changeTextRequest := srs.ChangeTextRequest{
+		changeBytesRequest := srs.ChangeBytesRequest{
 			Token: &srs.Token{
 				Token: token,
 			},
-			Id:            int32(id),
-			EncryptedText: encryptedText,
+			Id:             int32(id),
+			EncryptedBytes: encryptedBytes,
 		}
 
-		_, err = client.ChangeText(context.Background(), &changeTextRequest)
+		_, err = client.ChangeBytes(context.Background(), &changeBytesRequest)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -179,18 +177,18 @@ var textChangeCmd = &cobra.Command{
 }
 
 func init() {
-	textAddCmd.PersistentFlags().StringVarP(&recordName, "name", "n", "", "A name of stored record")
-	textAddCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")
-	textAddCmd.MarkFlagRequired("name")
+	binaryAddCmd.PersistentFlags().StringVarP(&recordName, "name", "n", "", "A name of stored record")
+	binaryAddCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")
+	binaryAddCmd.MarkFlagRequired("name")
 
-	textShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with text")
-	textShowCmd.MarkFlagRequired("id")
+	binaryShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with binary data")
+	binaryShowCmd.MarkFlagRequired("id")
 
-	textChangeCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with text")
-	textChangeCmd.MarkFlagRequired("id")
+	binaryChangeCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record with binary data")
+	binaryChangeCmd.MarkFlagRequired("id")
 
-	textCmd.AddCommand(textAddCmd)
-	textCmd.AddCommand(textShowCmd)
-	textCmd.AddCommand(textChangeCmd)
-	rootCmd.AddCommand(textCmd)
+	binaryCmd.AddCommand(binaryAddCmd)
+	binaryCmd.AddCommand(binaryShowCmd)
+	binaryCmd.AddCommand(binaryChangeCmd)
+	rootCmd.AddCommand(binaryCmd)
 }
