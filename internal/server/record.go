@@ -5,6 +5,7 @@ import (
 	"log"
 
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
+	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -67,6 +68,41 @@ func (s *Server) GetUserRecord(ctx context.Context, in *srs.GetUserRecordRequest
 		Name:       record.Name,
 		Metadata:   record.Metadata,
 	}
+
+	return &response, nil
+}
+
+func (s *Server) ChangeUserRecord(ctx context.Context, in *srs.ChangeUserRecordRequest) (*srs.ChangeUserRecordResponse, error) {
+	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи (ChangeUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.UserRecord.Id)
+
+	var response = srs.ChangeUserRecordResponse{}
+
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	record := storage.Record{
+		UserLogin: userLogin,
+		Id:        int(in.UserRecord.Id),
+		Name:      in.UserRecord.Name,
+		Metadata:  in.UserRecord.Metadata,
+	}
+
+	err = s.storageController.ChangeRecord(ctx, &record)
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка при изменении записи: %s.\n", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &response, nil
+}
+
+func (s *Server) DeleteUserRecord(ctx context.Context, in *srs.DeleteUserRecordRequest) (*srs.DeleteUserRecordResponse, error) {
+	log.Printf("gRPC-Сервер. Вызов сервиса удаления записи (DeleteUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
+
+	response := srs.DeleteUserRecordResponse{}
 
 	return &response, nil
 }

@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/jackc/pgerrcode"
@@ -13,19 +14,34 @@ import (
 const (
 	sqlInsertRecord = `
 	INSERT INTO public.user_records(
-	user_login, record_type, name, Metadata)
+	user_login, record_type, name, metadata)
 	VALUES ($1, $2, $3, $4)
-	RETURNING Id;
+	RETURNING id;
 `
 	sqlSelectUserRecords = `
-	SELECT Id, record_type, Name 
+	SELECT id, record_type, name 
 	FROM public.user_records
 	WHERE user_login = $1
 `
 	sqlSelectUserRecordMetadata = `
-	SELECT Id, record_type, Name, Metadata
+	SELECT id, record_type, name, metadata
 	FROM public.user_records
-	WHERE Id = $1 AND user_login = $2
+	WHERE id = $1 AND user_login = $2
+`
+	sqlUpdateUserRecordName = `
+	UPDATE public.user_records
+	SET name = $3
+	WHERE id = $1 AND user_login = $2
+`
+	sqlUpdateUserRecordMetadata = `
+	UPDATE public.user_records
+	SET metadata = $3
+	WHERE id = $1 AND user_login = $2
+`
+	sqlUpdateUserRecordNameMetadata = `
+	UPDATE public.user_records
+	SET name = $3, metadata = $4
+	WHERE id = $1 AND user_login = $2
 `
 
 	recordTypeLoginPassword            = "LOGIN_PASSWORD"
@@ -151,4 +167,43 @@ func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Rec
 
 	log.Printf("БД. Считана запись с ID '%d' для пользователя '%s'.\n", id, userLogin)
 	return &result, nil
+}
+
+func (s *Storage) ChangeRecord(ctx context.Context, r *Record) error {
+	log.Printf("БД. Изменение записи c ID '%d' для пользователя '%s'.\n", r.Id, r.UserLogin)
+
+	if r.UserLogin == "" {
+		return errors.New("не указан логин пользователя")
+	}
+
+	if r.Id == 0 {
+		return errors.New("не указан идентификатор записи")
+	}
+
+	if r.Name == "" && r.Metadata == "" {
+		return errors.New("не переданы данные для изменения записи")
+	}
+
+	var err error
+
+	if r.Metadata == "" {
+		_, err = s.conn.Exec(ctx, sqlUpdateUserRecordName, r.Id, r.UserLogin, r.Name)
+	} else if r.Name == "" {
+		_, err = s.conn.Exec(ctx, sqlUpdateUserRecordMetadata, r.Id, r.UserLogin, r.Metadata)
+	} else {
+		_, err = s.conn.Exec(ctx, sqlUpdateUserRecordNameMetadata, r.Id, r.UserLogin, r.Name, r.Metadata)
+		fmt.Println(sqlUpdateUserRecordNameMetadata, r.Id, r.UserLogin, r.Name, r.Metadata)
+	}
+
+	if err != nil {
+		log.Printf("БД. Ошибка при попытке обновления записи  в таблице user_records c ID '%d', сообщение: '%s'.\n", r.Id, err)
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) DeleteRecord(ctx context.Context, userLogin string, id int) error {
+
+	return nil
 }

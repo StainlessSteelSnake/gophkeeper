@@ -191,6 +191,22 @@ message ChangeBytesRequest {
 message ChangeBytesResponse {
 }
 
+message ChangeUserRecordRequest{
+  Token token = 1;
+  UserRecord user_record = 2;
+}
+
+message ChangeUserRecordResponse{
+}
+
+message DeleteUserRecordRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message DeleteUserRecordResponse{
+}
+
 service GophKeeper {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -198,6 +214,8 @@ service GophKeeper {
 
   rpc GetUserRecords(GetUserRecordsRequest) returns (GetUserRecordsResponse);
   rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
+  rpc ChangeUserRecord(ChangeUserRecordRequest) returns (ChangeUserRecordResponse);
+  rpc DeleteUserRecord(DeleteUserRecordRequest) returns (DeleteUserRecordResponse);
 
   rpc AddLoginPassword(AddLoginPasswordRequest) returns(AddLoginPasswordResponse);
   rpc GetLoginPassword(GetLoginPasswordRequest) returns(GetLoginPasswordResponse);

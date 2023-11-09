@@ -24,6 +24,8 @@ const (
 	GophKeeper_Logout_FullMethodName              = "/services.GophKeeper/Logout"
 	GophKeeper_GetUserRecords_FullMethodName      = "/services.GophKeeper/GetUserRecords"
 	GophKeeper_GetUserRecord_FullMethodName       = "/services.GophKeeper/GetUserRecord"
+	GophKeeper_ChangeUserRecord_FullMethodName    = "/services.GophKeeper/ChangeUserRecord"
+	GophKeeper_DeleteUserRecord_FullMethodName    = "/services.GophKeeper/DeleteUserRecord"
 	GophKeeper_AddLoginPassword_FullMethodName    = "/services.GophKeeper/AddLoginPassword"
 	GophKeeper_GetLoginPassword_FullMethodName    = "/services.GophKeeper/GetLoginPassword"
 	GophKeeper_ChangeLoginPassword_FullMethodName = "/services.GophKeeper/ChangeLoginPassword"
@@ -47,6 +49,8 @@ type GophKeeperClient interface {
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	GetUserRecords(ctx context.Context, in *GetUserRecordsRequest, opts ...grpc.CallOption) (*GetUserRecordsResponse, error)
 	GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error)
+	ChangeUserRecord(ctx context.Context, in *ChangeUserRecordRequest, opts ...grpc.CallOption) (*ChangeUserRecordResponse, error)
+	DeleteUserRecord(ctx context.Context, in *DeleteUserRecordRequest, opts ...grpc.CallOption) (*DeleteUserRecordResponse, error)
 	AddLoginPassword(ctx context.Context, in *AddLoginPasswordRequest, opts ...grpc.CallOption) (*AddLoginPasswordResponse, error)
 	GetLoginPassword(ctx context.Context, in *GetLoginPasswordRequest, opts ...grpc.CallOption) (*GetLoginPasswordResponse, error)
 	ChangeLoginPassword(ctx context.Context, in *ChangeLoginPasswordRequest, opts ...grpc.CallOption) (*ChangeLoginPasswordResponse, error)
@@ -108,6 +112,24 @@ func (c *gophKeeperClient) GetUserRecords(ctx context.Context, in *GetUserRecord
 func (c *gophKeeperClient) GetUserRecord(ctx context.Context, in *GetUserRecordRequest, opts ...grpc.CallOption) (*GetUserRecordResponse, error) {
 	out := new(GetUserRecordResponse)
 	err := c.cc.Invoke(ctx, GophKeeper_GetUserRecord_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) ChangeUserRecord(ctx context.Context, in *ChangeUserRecordRequest, opts ...grpc.CallOption) (*ChangeUserRecordResponse, error) {
+	out := new(ChangeUserRecordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_ChangeUserRecord_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) DeleteUserRecord(ctx context.Context, in *DeleteUserRecordRequest, opts ...grpc.CallOption) (*DeleteUserRecordResponse, error) {
+	out := new(DeleteUserRecordResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_DeleteUserRecord_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,6 +253,8 @@ type GophKeeperServer interface {
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	GetUserRecords(context.Context, *GetUserRecordsRequest) (*GetUserRecordsResponse, error)
 	GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error)
+	ChangeUserRecord(context.Context, *ChangeUserRecordRequest) (*ChangeUserRecordResponse, error)
+	DeleteUserRecord(context.Context, *DeleteUserRecordRequest) (*DeleteUserRecordResponse, error)
 	AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error)
 	GetLoginPassword(context.Context, *GetLoginPasswordRequest) (*GetLoginPasswordResponse, error)
 	ChangeLoginPassword(context.Context, *ChangeLoginPasswordRequest) (*ChangeLoginPasswordResponse, error)
@@ -264,6 +288,12 @@ func (UnimplementedGophKeeperServer) GetUserRecords(context.Context, *GetUserRec
 }
 func (UnimplementedGophKeeperServer) GetUserRecord(context.Context, *GetUserRecordRequest) (*GetUserRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecord not implemented")
+}
+func (UnimplementedGophKeeperServer) ChangeUserRecord(context.Context, *ChangeUserRecordRequest) (*ChangeUserRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeUserRecord not implemented")
+}
+func (UnimplementedGophKeeperServer) DeleteUserRecord(context.Context, *DeleteUserRecordRequest) (*DeleteUserRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserRecord not implemented")
 }
 func (UnimplementedGophKeeperServer) AddLoginPassword(context.Context, *AddLoginPasswordRequest) (*AddLoginPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLoginPassword not implemented")
@@ -400,6 +430,42 @@ func _GophKeeper_GetUserRecord_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophKeeperServer).GetUserRecord(ctx, req.(*GetUserRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_ChangeUserRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeUserRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ChangeUserRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ChangeUserRecord_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ChangeUserRecord(ctx, req.(*ChangeUserRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_DeleteUserRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).DeleteUserRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_DeleteUserRecord_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).DeleteUserRecord(ctx, req.(*DeleteUserRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -646,6 +712,14 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserRecord",
 			Handler:    _GophKeeper_GetUserRecord_Handler,
+		},
+		{
+			MethodName: "ChangeUserRecord",
+			Handler:    _GophKeeper_ChangeUserRecord_Handler,
+		},
+		{
+			MethodName: "DeleteUserRecord",
+			Handler:    _GophKeeper_DeleteUserRecord_Handler,
 		},
 		{
 			MethodName: "AddLoginPassword",

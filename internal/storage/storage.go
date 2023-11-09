@@ -20,6 +20,8 @@ type Storager interface {
 
 	GetRecords(ctx context.Context, userLogin string) ([]Record, error)
 	GetRecord(ctx context.Context, userLogin string, id int) (*Record, error)
+	ChangeRecord(ctx context.Context, r *Record) error
+	DeleteRecord(ctx context.Context, userLogin string, id int) error
 
 	AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error)
 	GetLoginPassword(ctx context.Context, userLogin string, id int) ([]byte, []byte, error)
