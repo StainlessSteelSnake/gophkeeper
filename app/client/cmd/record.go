@@ -143,6 +143,78 @@ var recordChangeCmd = &cobra.Command{
 	},
 }
 
+var recordDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete a record.",
+	Long:  `Delete a record.`,
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		token := config.GetToken()
+		if token == "" {
+			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+		}
+
+		if recordId == "" {
+			log.Fatalln(errors.New("не указан ID удаляемой записи"))
+		}
+
+		id, err := strconv.Atoi(recordId)
+		if err != nil {
+			log.Fatalln("неправильно указан ID удаляемой записи:", err)
+		}
+
+		getUserRecordRequest := srs.GetUserRecordRequest{
+			Token: &srs.Token{
+				Token: token,
+			},
+			Id: int32(id),
+		}
+
+		getUserRecordResponse, err := client.GetUserRecord(context.Background(), &getUserRecordRequest)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Printf(
+			"Подтвердить удаление записи с ID '%d' название '%s' и типом данных '%s'? (Y/N) (Д/Н)\n",
+			getUserRecordResponse.UserRecord.Id,
+			getUserRecordResponse.UserRecord.Name,
+			getUserRecordResponse.UserRecord.RecordType)
+
+		var confirmed bool
+		for !confirmed {
+			var answer string
+			_, err := fmt.Scan(&answer)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			switch answer {
+			case "n", "N", "Н", "н":
+				fmt.Printf("Удаление записи с ID '%d' не подтверждено.\n", getUserRecordResponse.UserRecord.Id)
+				return
+			case "y", "Y", "Д", "д":
+				fmt.Printf("Удаление записи с ID '%d' подтверждено.\n", getUserRecordResponse.UserRecord.Id)
+				confirmed = true
+			}
+		}
+
+		deleteUserRecordRequest := srs.DeleteUserRecordRequest{
+			Token: &srs.Token{
+				Token: token,
+			},
+			Id: int32(id),
+		}
+
+		_, err = client.DeleteUserRecord(context.Background(), &deleteUserRecordRequest)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Printf("Запись с ID '%d' успешно удалена.\n", id)
+	},
+}
+
 func init() {
 	recordShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record")
 	recordShowCmd.MarkFlagRequired("id")
@@ -152,8 +224,12 @@ func init() {
 	recordChangeCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")
 	recordChangeCmd.MarkFlagRequired("id")
 
+	recordDeleteCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record")
+	recordDeleteCmd.MarkFlagRequired("id")
+
 	recordCmd.AddCommand(recordListCmd)
 	recordCmd.AddCommand(recordShowCmd)
 	recordCmd.AddCommand(recordChangeCmd)
+	recordCmd.AddCommand(recordDeleteCmd)
 	rootCmd.AddCommand(recordCmd)
 }

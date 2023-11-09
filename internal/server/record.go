@@ -102,7 +102,19 @@ func (s *Server) ChangeUserRecord(ctx context.Context, in *srs.ChangeUserRecordR
 func (s *Server) DeleteUserRecord(ctx context.Context, in *srs.DeleteUserRecordRequest) (*srs.DeleteUserRecordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса удаления записи (DeleteUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
+	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка авторизации: %s.\n", err)
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
 	response := srs.DeleteUserRecordResponse{}
+
+	err = s.storageController.DeleteRecord(ctx, userLogin, int(in.Id))
+	if err != nil {
+		log.Printf("gRPC-Сервер. Ошибка при удалении записи: %s.\n", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
 	return &response, nil
 }

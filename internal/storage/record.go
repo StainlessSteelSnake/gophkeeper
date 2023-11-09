@@ -43,6 +43,10 @@ const (
 	SET name = $3, metadata = $4
 	WHERE id = $1 AND user_login = $2
 `
+	sqlDeleteUserRecord = `
+	DELETE FROM public.user_records
+	WHERE id = $1 AND user_login = $2
+`
 
 	recordTypeLoginPassword            = "LOGIN_PASSWORD"
 	recordTypeLoginPasswordDescription = "Логин и пароль"
@@ -196,7 +200,7 @@ func (s *Storage) ChangeRecord(ctx context.Context, r *Record) error {
 	}
 
 	if err != nil {
-		log.Printf("БД. Ошибка при попытке обновления записи  в таблице user_records c ID '%d', сообщение: '%s'.\n", r.Id, err)
+		log.Printf("БД. Ошибка при попытке обновления записи в таблице user_records c ID '%d', сообщение: '%s'.\n", r.Id, err)
 		return err
 	}
 
@@ -204,6 +208,21 @@ func (s *Storage) ChangeRecord(ctx context.Context, r *Record) error {
 }
 
 func (s *Storage) DeleteRecord(ctx context.Context, userLogin string, id int) error {
+	log.Printf("БД. Удаление записи c ID '%d' для пользователя '%s'.\n", id, userLogin)
+
+	if userLogin == "" {
+		return errors.New("не указан логин пользователя")
+	}
+
+	if id == 0 {
+		return errors.New("не указан идентификатор записи")
+	}
+
+	_, err := s.conn.Exec(ctx, sqlDeleteUserRecord, id, userLogin)
+	if err != nil {
+		log.Printf("БД. Ошибка при попытке удаления записи из таблицы user_records c ID '%d', сообщение: '%s'.\n", id, err)
+		return err
+	}
 
 	return nil
 }
