@@ -23,5 +23,4 @@ func WriteBytes(b []byte) {
 	buf := bufio.NewWriter(os.Stdout)
 
 	buf.Write(b)
-	buf.Flush()
 }

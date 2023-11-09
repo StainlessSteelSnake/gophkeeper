@@ -34,7 +34,11 @@ var binaryAddCmd = &cobra.Command{
 			log.Fatalln(errors.New("не указано название сохраняемой записи"))
 		}
 
-		binary := inout.ReadBytes()
+		binary, err := inout.ReadBytes()
+		if err != nil {
+			log.Fatalln(err)
+		}
+
 		if len(binary) == 0 {
 			log.Fatalln(errors.New("не переданы бинарные данные для сохранения"))
 		}
@@ -42,7 +46,7 @@ var binaryAddCmd = &cobra.Command{
 		keyPhrase := config.GetKeyPhrase()
 		encryptor := coder.NewCoder()
 
-		err := encryptor.SetKeyHex(keyPhrase)
+		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -141,7 +145,10 @@ var binaryChangeCmd = &cobra.Command{
 			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
 		}
 
-		binary := inout.ReadBytes()
+		binary, err := inout.ReadBytes()
+		if err != nil {
+			log.Fatalln(err)
+		}
 		if len(binary) == 0 {
 			log.Fatalln(errors.New("не переданы бинарные данные для изменения"))
 		}
