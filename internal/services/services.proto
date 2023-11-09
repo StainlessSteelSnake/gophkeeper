@@ -135,6 +135,62 @@ message ChangeBankCardRequest{
 message ChangeBankCardResponse{
 }
 
+message AddTextRequest {
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  bytes encrypted_text = 3;
+}
+
+message AddTextResponse {
+  int32 id = 1;
+}
+
+message GetTextRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetTextResponse {
+  bytes encrypted_text = 1;
+}
+
+message ChangeTextRequest {
+  Token token = 1;
+  int32 id = 2;
+  bytes encrypted_text = 3;
+}
+
+message ChangeTextResponse {
+}
+
+message AddBytesRequest {
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  bytes encrypted_bytes = 3;
+}
+
+message AddBytesResponse {
+  int32 id = 1;
+}
+
+message GetBytesRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetBytesResponse {
+  bytes encrypted_bytes = 1;
+}
+
+message ChangeBytesRequest {
+  Token token = 1;
+  int32 id = 2;
+  bytes encrypted_bytes = 3;
+}
+
+message ChangeBytesResponse {
+}
+
 service GophKeeper {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -150,4 +206,12 @@ service GophKeeper {
   rpc AddBankCard(AddBankCardRequest) returns(AddBankCardResponse);
   rpc GetBankCard(GetBankCardRequest) returns(GetBankCardResponse);
   rpc ChangeBankCard(ChangeBankCardRequest) returns(ChangeBankCardResponse);
+
+  rpc AddText(AddTextRequest) returns(AddTextResponse);
+  rpc GetText(GetTextRequest) returns(GetTextResponse);
+  rpc ChangeText(ChangeTextRequest) returns(ChangeTextResponse);
+
+  rpc AddBytes(AddBytesRequest) returns(AddBytesResponse);
+  rpc GetBytes(GetBytesRequest) returns(GetBytesResponse);
+  rpc ChangeBytes(ChangeBytesRequest) returns(ChangeBytesResponse);
 }

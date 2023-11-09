@@ -29,6 +29,14 @@ type Storager interface {
 	GetBankCard(ctx context.Context, userLogin string, id int) (*BankCard, error)
 	ChangeBankCard(ctx context.Context, userLogin string, id int, bankCard *BankCard) error
 
+	AddText(ctx context.Context, userLogin string, name string, text []byte, metadata string) (int, error)
+	GetText(ctx context.Context, userLogin string, id int) ([]byte, error)
+	ChangeText(ctx context.Context, userLogin string, id int, text []byte) error
+
+	AddBinary(ctx context.Context, userLogin string, name string, binary []byte, metadata string) (int, error)
+	GetBinary(ctx context.Context, userLogin string, id int) ([]byte, error)
+	ChangeBinary(ctx context.Context, userLogin string, id int, binary []byte) error
+
 	Close(ctx context.Context)
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) AddBankCard(ctx context.Context, in *srs.AddBankCardRequest) (*srs.AddBankCardResponse, error) {
-	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи c банковской картой (AddBankCard) со входными данными: Token=%s.\n", in.Token.Token)
+	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи о банковской карте (AddBankCard) со входными данными: Token=%s.\n", in.Token.Token)
 
 	var response = srs.AddBankCardResponse{}
 
@@ -37,7 +37,7 @@ func (s *Server) AddBankCard(ctx context.Context, in *srs.AddBankCardRequest) (*
 		in.NameMetadata.Metadata)
 
 	if err != nil {
-		log.Printf("gRPC-Сервер. Ошибка добавления записи c логином и паролем: %s.\n", err)
+		log.Printf("gRPC-Сервер. Ошибка добавления записи о банковской карте: %s.\n", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -47,11 +47,7 @@ func (s *Server) AddBankCard(ctx context.Context, in *srs.AddBankCardRequest) (*
 }
 
 func (s *Server) GetBankCard(ctx context.Context, in *srs.GetBankCardRequest) (*srs.GetBankCardResponse, error) {
-	log.Printf("gRPC-Сервер. Вызов сервиса получения записи c банковской картой (GetBankCard) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
-
-	var response = srs.GetBankCardResponse{
-		EncryptedBankCard: &srs.EncryptedBankCard{},
-	}
+	log.Printf("gRPC-Сервер. Вызов сервиса получения записи о банковской карте (GetBankCard) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
 	userLogin, _, err := s.authenticator.Authenticate(ctx, in.Token.Token)
 	if err != nil {
@@ -59,9 +55,13 @@ func (s *Server) GetBankCard(ctx context.Context, in *srs.GetBankCardRequest) (*
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
+	var response = srs.GetBankCardResponse{
+		EncryptedBankCard: &srs.EncryptedBankCard{},
+	}
+
 	bankCard, err := s.storageController.GetBankCard(ctx, userLogin, int(in.Id))
 	if err != nil {
-		log.Printf("gRPC-Сервер. Ошибка получения записи c банковской картой: %s.\n", err)
+		log.Printf("gRPC-Сервер. Ошибка получения записи о банковской карте: %s.\n", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -75,7 +75,7 @@ func (s *Server) GetBankCard(ctx context.Context, in *srs.GetBankCardRequest) (*
 }
 
 func (s *Server) ChangeBankCard(ctx context.Context, in *srs.ChangeBankCardRequest) (*srs.ChangeBankCardResponse, error) {
-	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи c банковской картой (ChangeLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
+	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи о банковской карте (ChangeLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
 	var response = srs.ChangeBankCardResponse{}
 
@@ -95,7 +95,7 @@ func (s *Server) ChangeBankCard(ctx context.Context, in *srs.ChangeBankCardReque
 		bankCard, err = s.storageController.GetBankCard(ctx, userLogin, int(in.Id))
 
 		if err != nil {
-			log.Printf("gRPC-Сервер. Ошибка получения записи c банковской картой: %s.\n", err)
+			log.Printf("gRPC-Сервер. Ошибка получения записи о банковской карте: %s.\n", err)
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
@@ -127,7 +127,7 @@ func (s *Server) ChangeBankCard(ctx context.Context, in *srs.ChangeBankCardReque
 		bankCard)
 
 	if err != nil {
-		log.Printf("gRPC-Сервер. Ошибка при изменении записи c банковской картой: %s.\n", err)
+		log.Printf("gRPC-Сервер. Ошибка при изменении записи о банковской карте: %s.\n", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

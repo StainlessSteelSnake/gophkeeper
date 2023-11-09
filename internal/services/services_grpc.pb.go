@@ -30,6 +30,12 @@ const (
 	GophKeeper_AddBankCard_FullMethodName         = "/services.GophKeeper/AddBankCard"
 	GophKeeper_GetBankCard_FullMethodName         = "/services.GophKeeper/GetBankCard"
 	GophKeeper_ChangeBankCard_FullMethodName      = "/services.GophKeeper/ChangeBankCard"
+	GophKeeper_AddText_FullMethodName             = "/services.GophKeeper/AddText"
+	GophKeeper_GetText_FullMethodName             = "/services.GophKeeper/GetText"
+	GophKeeper_ChangeText_FullMethodName          = "/services.GophKeeper/ChangeText"
+	GophKeeper_AddBytes_FullMethodName            = "/services.GophKeeper/AddBytes"
+	GophKeeper_GetBytes_FullMethodName            = "/services.GophKeeper/GetBytes"
+	GophKeeper_ChangeBytes_FullMethodName         = "/services.GophKeeper/ChangeBytes"
 )
 
 // GophKeeperClient is the client API for GophKeeper service.
@@ -47,6 +53,12 @@ type GophKeeperClient interface {
 	AddBankCard(ctx context.Context, in *AddBankCardRequest, opts ...grpc.CallOption) (*AddBankCardResponse, error)
 	GetBankCard(ctx context.Context, in *GetBankCardRequest, opts ...grpc.CallOption) (*GetBankCardResponse, error)
 	ChangeBankCard(ctx context.Context, in *ChangeBankCardRequest, opts ...grpc.CallOption) (*ChangeBankCardResponse, error)
+	AddText(ctx context.Context, in *AddTextRequest, opts ...grpc.CallOption) (*AddTextResponse, error)
+	GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error)
+	ChangeText(ctx context.Context, in *ChangeTextRequest, opts ...grpc.CallOption) (*ChangeTextResponse, error)
+	AddBytes(ctx context.Context, in *AddBytesRequest, opts ...grpc.CallOption) (*AddBytesResponse, error)
+	GetBytes(ctx context.Context, in *GetBytesRequest, opts ...grpc.CallOption) (*GetBytesResponse, error)
+	ChangeBytes(ctx context.Context, in *ChangeBytesRequest, opts ...grpc.CallOption) (*ChangeBytesResponse, error)
 }
 
 type gophKeeperClient struct {
@@ -156,6 +168,60 @@ func (c *gophKeeperClient) ChangeBankCard(ctx context.Context, in *ChangeBankCar
 	return out, nil
 }
 
+func (c *gophKeeperClient) AddText(ctx context.Context, in *AddTextRequest, opts ...grpc.CallOption) (*AddTextResponse, error) {
+	out := new(AddTextResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_AddText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error) {
+	out := new(GetTextResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) ChangeText(ctx context.Context, in *ChangeTextRequest, opts ...grpc.CallOption) (*ChangeTextResponse, error) {
+	out := new(ChangeTextResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_ChangeText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) AddBytes(ctx context.Context, in *AddBytesRequest, opts ...grpc.CallOption) (*AddBytesResponse, error) {
+	out := new(AddBytesResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_AddBytes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) GetBytes(ctx context.Context, in *GetBytesRequest, opts ...grpc.CallOption) (*GetBytesResponse, error) {
+	out := new(GetBytesResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_GetBytes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) ChangeBytes(ctx context.Context, in *ChangeBytesRequest, opts ...grpc.CallOption) (*ChangeBytesResponse, error) {
+	out := new(ChangeBytesResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_ChangeBytes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GophKeeperServer is the server API for GophKeeper service.
 // All implementations must embed UnimplementedGophKeeperServer
 // for forward compatibility
@@ -171,6 +237,12 @@ type GophKeeperServer interface {
 	AddBankCard(context.Context, *AddBankCardRequest) (*AddBankCardResponse, error)
 	GetBankCard(context.Context, *GetBankCardRequest) (*GetBankCardResponse, error)
 	ChangeBankCard(context.Context, *ChangeBankCardRequest) (*ChangeBankCardResponse, error)
+	AddText(context.Context, *AddTextRequest) (*AddTextResponse, error)
+	GetText(context.Context, *GetTextRequest) (*GetTextResponse, error)
+	ChangeText(context.Context, *ChangeTextRequest) (*ChangeTextResponse, error)
+	AddBytes(context.Context, *AddBytesRequest) (*AddBytesResponse, error)
+	GetBytes(context.Context, *GetBytesRequest) (*GetBytesResponse, error)
+	ChangeBytes(context.Context, *ChangeBytesRequest) (*ChangeBytesResponse, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
 
@@ -210,6 +282,24 @@ func (UnimplementedGophKeeperServer) GetBankCard(context.Context, *GetBankCardRe
 }
 func (UnimplementedGophKeeperServer) ChangeBankCard(context.Context, *ChangeBankCardRequest) (*ChangeBankCardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeBankCard not implemented")
+}
+func (UnimplementedGophKeeperServer) AddText(context.Context, *AddTextRequest) (*AddTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddText not implemented")
+}
+func (UnimplementedGophKeeperServer) GetText(context.Context, *GetTextRequest) (*GetTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetText not implemented")
+}
+func (UnimplementedGophKeeperServer) ChangeText(context.Context, *ChangeTextRequest) (*ChangeTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeText not implemented")
+}
+func (UnimplementedGophKeeperServer) AddBytes(context.Context, *AddBytesRequest) (*AddBytesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddBytes not implemented")
+}
+func (UnimplementedGophKeeperServer) GetBytes(context.Context, *GetBytesRequest) (*GetBytesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBytes not implemented")
+}
+func (UnimplementedGophKeeperServer) ChangeBytes(context.Context, *ChangeBytesRequest) (*ChangeBytesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeBytes not implemented")
 }
 func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
@@ -422,6 +512,114 @@ func _GophKeeper_ChangeBankCard_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GophKeeper_AddText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).AddText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_AddText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).AddText(ctx, req.(*AddTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_GetText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetText(ctx, req.(*GetTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_ChangeText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ChangeText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ChangeText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ChangeText(ctx, req.(*ChangeTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_AddBytes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddBytesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).AddBytes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_AddBytes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).AddBytes(ctx, req.(*AddBytesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_GetBytes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBytesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).GetBytes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_GetBytes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).GetBytes(ctx, req.(*GetBytesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_ChangeBytes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeBytesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ChangeBytes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ChangeBytes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ChangeBytes(ctx, req.(*ChangeBytesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GophKeeper_ServiceDesc is the grpc.ServiceDesc for GophKeeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -472,6 +670,30 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeBankCard",
 			Handler:    _GophKeeper_ChangeBankCard_Handler,
+		},
+		{
+			MethodName: "AddText",
+			Handler:    _GophKeeper_AddText_Handler,
+		},
+		{
+			MethodName: "GetText",
+			Handler:    _GophKeeper_GetText_Handler,
+		},
+		{
+			MethodName: "ChangeText",
+			Handler:    _GophKeeper_ChangeText_Handler,
+		},
+		{
+			MethodName: "AddBytes",
+			Handler:    _GophKeeper_AddBytes_Handler,
+		},
+		{
+			MethodName: "GetBytes",
+			Handler:    _GophKeeper_GetBytes_Handler,
+		},
+		{
+			MethodName: "ChangeBytes",
+			Handler:    _GophKeeper_ChangeBytes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -30,8 +30,13 @@ var (
 )
 
 func main() {
-	fmt.Println(Version)
-	fmt.Println(BuildTime)
+	if Version != "" {
+		fmt.Println(Version)
+	}
+
+	if BuildTime != "" {
+		fmt.Println(BuildTime)
+	}
 
 	cfg, err := config.ReadConfig()
 	if err != nil {
@@ -49,28 +54,4 @@ func main() {
 	client := srs.NewGophKeeperClient(conn)
 
 	cmd.Execute(client, cfg)
-
-	/*
-		var input []byte = make([]byte, 100)
-		for {
-			count, err := os.Stdin.Read(input)
-			if err == io.EOF {
-				log.Println("End of file")
-				break
-			}
-
-			if err != nil {
-				log.Fatalln(err)
-				break
-			}
-
-			if count == 0 {
-				log.Println("0 characters read")
-				break
-			}
-
-			fmt.Println(string(input))
-		}
-
-	*/
 }

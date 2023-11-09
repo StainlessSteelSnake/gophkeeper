@@ -101,7 +101,6 @@ var recordShowCmd = &cobra.Command{
 
 func init() {
 	recordShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The password to log in to the server")
-
 	recordShowCmd.MarkFlagRequired("id")
 
 	recordCmd.AddCommand(recordListCmd)

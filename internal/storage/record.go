@@ -62,7 +62,7 @@ func getRecordType(rt string) string {
 }
 
 func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
-	log.Printf("БД. Добавление в таблицу user_records записи пользователя '%s', типом '%s' и названием '%v'.\n", r.UserLogin, r.RecordType, r.Name)
+	log.Printf("БД. Добавление в таблицу user_records записи пользователя '%s' с типом '%s' и названием '%v'.\n", r.UserLogin, r.RecordType, r.Name)
 
 	var pgErr *pgconn.PgError
 
@@ -72,12 +72,12 @@ func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
 	err := row.Scan(&recordId)
 
 	if err != nil && !errors.As(err, &pgErr) {
-		log.Printf("БД. Ошибка при добавлении записи в таблицу user_records, сообщение: '%s'.\n", err)
+		log.Printf("БД. Ошибка при добавлении записи пользователя в таблицу user_records, сообщение: '%s'.\n", err)
 		return 0, err
 	}
 
 	if err != nil && pgErr.Code != pgerrcode.UniqueViolation {
-		log.Printf("БД. Ошибка при добавлении записи в таблицу user_records, код ошибки '%s', сообщение: '%s'.\n", pgErr.Code, pgErr.Error())
+		log.Printf("БД. Ошибка при добавлении записи пользователя в таблицу user_records, код ошибки '%s', сообщение: '%s'.\n", pgErr.Code, pgErr.Error())
 		return 0, err
 	}
 
@@ -86,7 +86,7 @@ func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
 		return 0, err
 	}
 
-	log.Printf("БД. В таблицу user_records добавленя запись с Id '%d' для пользователя '%s', с типом '%s' и названием '%v'.\n", recordId, r.UserLogin, r.RecordType, r.Name)
+	log.Printf("БД. В таблицу user_records добавленя запись с ID '%d' для пользователя '%s' с типом '%s' и названием '%v'.\n", recordId, r.UserLogin, r.RecordType, r.Name)
 	return recordId, nil
 }
 
@@ -126,7 +126,7 @@ func (s *Storage) GetRecords(ctx context.Context, userLogin string) ([]Record, e
 }
 
 func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Record, error) {
-	log.Printf("БД. Получение записи c Id '%d' для пользователя '%s'.\n", id, userLogin)
+	log.Printf("БД. Получение записи c ID '%d' для пользователя '%s'.\n", id, userLogin)
 
 	if userLogin == "" {
 		return nil, errors.New("не указан логин пользователя")
@@ -143,12 +143,12 @@ func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Rec
 	err := row.Scan(&result.Id, &result.RecordType, &result.Name, &result.Metadata)
 
 	if err != nil {
-		log.Printf("БД. Ошибка при попытке получения записи c Id '%d' для пользователя '%s', сообщение: '%s'.\n", id, userLogin, err)
+		log.Printf("БД. Ошибка при попытке получения записи c ID '%d' для пользователя '%s', сообщение: '%s'.\n", id, userLogin, err)
 		return nil, err
 	}
 
 	result.RecordType = getRecordType(result.RecordType)
 
-	log.Printf("БД. Считан запись с Id '%d' для пользователя '%s'.\n", id, userLogin)
+	log.Printf("БД. Считана запись с ID '%d' для пользователя '%s'.\n", id, userLogin)
 	return &result, nil
 }

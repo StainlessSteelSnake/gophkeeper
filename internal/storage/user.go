@@ -11,10 +11,8 @@ import (
 
 const (
 	sqlInsertUser = `
-	INSERT INTO public.users
-	    (
-			login, password
-		)
+	INSERT INTO public.users(
+	login, password)
 	VALUES ($1, $2)`
 
 	sqlSelectUser = `
@@ -70,7 +68,7 @@ func (s *Storage) GetUser(ctx context.Context, login string) (passwordHash strin
 
 	err = row.Scan(&passwordHash, &maxRecordId)
 	if err != nil {
-		log.Println("БД. Ошибка при получении пользователя:", err)
+		log.Printf("БД. Ошибка при получении пользователя '%s', сообщение: %s.\n", login, err)
 		return "", 0, err
 	}
 

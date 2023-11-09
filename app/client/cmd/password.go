@@ -219,7 +219,6 @@ func init() {
 	passwordAddCmd.PersistentFlags().StringVarP(&storedPassword, "password", "p", "", "A password to store")
 	passwordAddCmd.PersistentFlags().StringVarP(&recordName, "name", "n", "", "A name of stored record")
 	passwordAddCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")
-
 	passwordAddCmd.MarkFlagRequired("login")
 	passwordAddCmd.MarkFlagRequired("password")
 	passwordAddCmd.MarkFlagRequired("name")
