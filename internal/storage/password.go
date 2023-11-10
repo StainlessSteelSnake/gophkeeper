@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -82,8 +83,14 @@ func (s *Storage) GetLoginPassword(ctx context.Context, userLogin string, id int
 	var storedPassword []byte
 
 	err := row.Scan(&storedLogin, &storedPassword)
+
+	if err != nil && errors.Is(err, pgx.ErrNoRows) {
+		log.Printf("БД. Не найдена запись о логине и пароле из таблицы encrypted_passwords c ID '%d', сообщение: '%s'.\n", id, err)
+		return nil, nil, ErrorRecordNotFound
+	}
+
 	if err != nil {
-		log.Printf("БД. Ошибка при чтении записи о логине и пароле из таблицы encrypted_passwords c ID '%d', сообщение: '%s'.\n", id, err)
+		log.Printf("БД. Ошибка при чтении записи о логине и пароле из таблицы encrypted_passwords с ID '%d', сообщение: '%s'.\n", id, err)
 		return nil, nil, err
 	}
 
@@ -96,10 +103,14 @@ func (s *Storage) ChangeLoginPassword(ctx context.Context, userLogin string, id 
 		return errors.New("не указан логин пользователя")
 	}
 
-	_, err := s.conn.Exec(ctx, sqlUpdateRecordLoginPassword, id, userLogin, login, password)
+	ct, err := s.conn.Exec(ctx, sqlUpdateRecordLoginPassword, id, userLogin, login, password)
 	if err != nil {
 		log.Printf("БД. Ошибка при попытке обновления записи о логине и пароле в таблице encrypted_passwords c ID '%d', сообщение: '%s'.\n", id, err)
 		return err
+	}
+
+	if ct.RowsAffected() == 0 {
+		return ErrorRecordNotFound
 	}
 
 	return nil

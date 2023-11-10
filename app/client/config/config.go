@@ -10,6 +10,8 @@ const (
 	cfgFileName  = "gophkeeper.yaml"
 	cfgKeyphrase = "keyphrase"
 	cfgToken     = "token"
+	cfgVersion   = "version"
+	cfgBuildTime = "build_time"
 )
 
 type config struct {
@@ -21,6 +23,8 @@ type Configurator interface {
 	GetToken() string
 	SetKeyPhrase(string) error
 	GetKeyPhrase() string
+	SetVersion(string, string)
+	GetVersion() (string, string)
 }
 
 func init() {
@@ -66,4 +70,15 @@ func (c *config) SetKeyPhrase(keyphrase string) error {
 
 func (c *config) GetKeyPhrase() string {
 	return c.v.GetString(cfgKeyphrase)
+}
+
+func (c *config) SetVersion(version, buildTime string) {
+	c.v.Set(cfgVersion, version)
+	c.v.Set(cfgBuildTime, buildTime)
+}
+
+func (c *config) GetVersion() (version, buildTime string) {
+	version = c.v.GetString(cfgVersion)
+	buildTime = c.v.GetString(cfgBuildTime)
+	return version, buildTime
 }

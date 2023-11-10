@@ -2,9 +2,11 @@ package server
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
+	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -52,6 +54,11 @@ func (s *Server) GetLoginPassword(ctx context.Context, in *srs.GetLoginPasswordR
 	}
 
 	encryptedLogin, encryptedPassword, err := s.storageController.GetLoginPassword(ctx, userLogin, int(in.Id))
+	if err != nil && errors.Is(err, storage.ErrorRecordNotFound) {
+		log.Printf("gRPC-Сервер. Ошибка получения записи c логином и паролем: %s.\n", err)
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка получения записи c логином и паролем: %s.\n", err)
 		return nil, status.Error(codes.Internal, err.Error())
@@ -78,6 +85,11 @@ func (s *Server) ChangeLoginPassword(ctx context.Context, in *srs.ChangeLoginPas
 
 	if in.EncryptedLoginPassword.EncryptedLogin == nil || in.EncryptedLoginPassword.EncryptedPassword == nil {
 		encryptedLogin, encryptedPassword, err = s.storageController.GetLoginPassword(ctx, userLogin, int(in.Id))
+		if err != nil && errors.Is(err, storage.ErrorRecordNotFound) {
+			log.Printf("gRPC-Сервер. Ошибка получения записи c логином и паролем: %s.\n", err)
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+
 		if err != nil {
 			log.Printf("gRPC-Сервер. Ошибка получения записи c логином и паролем: %s.\n", err)
 			return nil, status.Error(codes.Internal, err.Error())
@@ -99,6 +111,11 @@ func (s *Server) ChangeLoginPassword(ctx context.Context, in *srs.ChangeLoginPas
 		encryptedLogin,
 		encryptedPassword,
 	)
+
+	if err != nil && errors.Is(err, storage.ErrorRecordNotFound) {
+		log.Printf("gRPC-Сервер. Ошибка при изменении записи c логином и паролем: %s.\n", err)
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
 
 	if err != nil {
 		log.Printf("gRPC-Сервер. Ошибка при изменении записи c логином и паролем: %s.\n", err)

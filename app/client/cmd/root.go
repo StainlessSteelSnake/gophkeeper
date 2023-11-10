@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
@@ -12,6 +13,8 @@ type Configurator interface {
 	GetToken() string
 	SetKeyPhrase(string) error
 	GetKeyPhrase() string
+	SetVersion(string, string)
+	GetVersion() (string, string)
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -28,6 +31,18 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Shows current version and build date/time of GophKeeper",
 	Long:  "Shows current version and build date/time of GophKeeper.",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		version, buildTime := config.GetVersion()
+
+		if version != "" {
+			fmt.Println("Версия приложения:", version)
+		}
+
+		if buildTime != "" {
+			fmt.Println("Дата и время сборки:", buildTime)
+		}
+	},
 }
 
 var client services.GophKeeperClient

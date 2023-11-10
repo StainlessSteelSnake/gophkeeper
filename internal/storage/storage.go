@@ -42,6 +42,8 @@ type Storager interface {
 	Close(ctx context.Context)
 }
 
+var ErrorRecordNotFound = errors.New("Запись с указанным идентификатором не найдена")
+
 func NewStorage(ctx context.Context, databaseUri string) Storager {
 	var err error
 	storage := &Storage{}
