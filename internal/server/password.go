@@ -5,10 +5,11 @@ import (
 	"errors"
 	"log"
 
-	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
+	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
 func (s *Server) AddLoginPassword(ctx context.Context, in *srs.AddLoginPasswordRequest) (*srs.AddLoginPasswordResponse, error) {

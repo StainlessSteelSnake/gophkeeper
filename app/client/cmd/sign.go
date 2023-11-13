@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/spf13/cobra"
+
 	"github.com/StainlessSteelSnake/gophkeeper/internal/coder"
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"github.com/spf13/cobra"
 )
 
 var userLogin, userPassword string
@@ -62,8 +63,6 @@ var signInCmd = &cobra.Command{
 	Long:  `Login to GophKeeper server with user name and password.`,
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("User:", cmd.Flag("user").Value, ", Password:", cmd.Flag("password").Value, ".")
-
 		loginRequest := srs.LoginRequest{
 			LoginPassword: &srs.LoginPassword{
 				Login:    userLogin,

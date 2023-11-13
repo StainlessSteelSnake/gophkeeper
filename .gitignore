@@ -26,3 +26,4 @@ app/client/.DS_Store
 /.idea/
 *.DS_Store
 gophkeeper.yaml
+/app/client/test.txt

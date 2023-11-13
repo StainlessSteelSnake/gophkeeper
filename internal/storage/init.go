@@ -40,16 +40,6 @@ const (
 
 		TABLESPACE pg_default;`
 
-	sqlCreateTableEncryptedTexts = `
-		CREATE TABLE IF NOT EXISTS public.encrypted_texts
-		(
-			Id integer NOT NULL,
-			text_data bytea NOT NULL,
-			CONSTRAINT encrypted_texts_pkey PRIMARY KEY (Id)
-		)
-
-		TABLESPACE pg_default;`
-
 	sqlCreateTableEncryptedBinaries = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_binaries
 		(
@@ -87,11 +77,6 @@ func (s *Storage) init(ctx context.Context) error {
 	}
 
 	_, err = s.conn.Exec(ctx, sqlCreateTableEncryptedPasswords)
-	if err != nil {
-		return err
-	}
-
-	_, err = s.conn.Exec(ctx, sqlCreateTableEncryptedTexts)
 	if err != nil {
 		return err
 	}

@@ -7,8 +7,9 @@ import (
 	"log"
 	"strconv"
 
-	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"github.com/spf13/cobra"
+
+	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
 var recordId string

@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	conf "github.com/StainlessSteelSnake/gophkeeper/app/client/config"
-
-	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"github.com/spf13/cobra"
+
+	conf "github.com/StainlessSteelSnake/gophkeeper/app/client/config"
+	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
 var ServerAddress string

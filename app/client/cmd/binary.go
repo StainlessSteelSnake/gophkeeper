@@ -7,10 +7,11 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/spf13/cobra"
+
 	"github.com/StainlessSteelSnake/gophkeeper/internal/coder"
 	"github.com/StainlessSteelSnake/gophkeeper/internal/inout"
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"github.com/spf13/cobra"
 )
 
 var binaryCmd = &cobra.Command{

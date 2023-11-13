@@ -4,9 +4,10 @@ import (
 	"context"
 	"log"
 
-	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
 func (s *Server) Register(ctx context.Context, in *srs.RegisterRequest) (*srs.RegisterResponse, error) {

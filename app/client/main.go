@@ -3,11 +3,12 @@ package main
 import (
 	"log"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"github.com/StainlessSteelSnake/gophkeeper/app/client/cmd"
 	"github.com/StainlessSteelSnake/gophkeeper/app/client/config"
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Запуск скрипта для сборки исполняемых файлов и передачи в них общих данных:

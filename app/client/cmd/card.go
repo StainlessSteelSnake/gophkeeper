@@ -7,9 +7,10 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/spf13/cobra"
+
 	"github.com/StainlessSteelSnake/gophkeeper/internal/coder"
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"github.com/spf13/cobra"
 )
 
 var storedCardNumber, storedCardHolder, storedCardExpiryYear, storedCardExpiryMonth, storedCardCvc string

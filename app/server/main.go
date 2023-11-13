@@ -21,7 +21,7 @@ func main() {
 		panic(err)
 	}
 
-	srv, err := server.NewServer(dbStorage, authenticator, "tcp", ":3200")
+	srv, err := server.NewServer(dbStorage, authenticator, "tcp", cfg.ServerAddress)
 	if err != nil {
 		panic(err)
 	}

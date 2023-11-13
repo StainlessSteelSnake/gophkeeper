@@ -1,8 +1,10 @@
 package config
 
+import "flag"
+
 const (
-	defaultDatabaseURI   = "postgresql://gophkeeper_admin:a1s9u8k3a@localhost:5432/gophkeeper"
-	defaultServerAddress = "localhost:8081"
+	defaultDatabaseURI   = "postgresql://user:password@host:5432/gophkeeper"
+	defaultServerAddress = "localhost:3200"
 )
 
 type Configuration struct {
@@ -13,8 +15,9 @@ type Configuration struct {
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{}
 
-	cfg.ServerAddress = defaultServerAddress
-	cfg.DatabaseURI = defaultDatabaseURI
+	flag.StringVar(&cfg.ServerAddress, "a", defaultServerAddress, "string with server address")
+	flag.StringVar(&cfg.DatabaseURI, "d", defaultDatabaseURI, "string with database URI")
+	flag.Parse()
 
 	return cfg
 }

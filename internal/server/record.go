@@ -4,10 +4,11 @@ import (
 	"context"
 	"log"
 
-	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
-	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
+	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
 func (s *Server) GetUserRecords(ctx context.Context, in *srs.GetUserRecordsRequest) (*srs.GetUserRecordsResponse, error) {

@@ -4,10 +4,11 @@ import (
 	"errors"
 	"net"
 
+	"google.golang.org/grpc"
+
 	"github.com/StainlessSteelSnake/gophkeeper/internal/auth"
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
-	"google.golang.org/grpc"
 )
 
 type Server struct {
