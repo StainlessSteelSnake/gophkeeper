@@ -1,3 +1,5 @@
+// Функции для работы в БД с данными об учётных записях пользователей приложения.
+
 package storage
 
 import (
@@ -10,19 +12,23 @@ import (
 )
 
 const (
+	// sqlInsertBankCard содержит SQL-запрос для добавления пользователя приложения.
 	sqlInsertUser = `
 	INSERT INTO public.users(
 	login, password)
 	VALUES ($1, $2)`
 
+	// sqlSelectUser содержит SQL-запрос для получения хэша пароля пользователя
+	// и количества его записей с зашифрованных данных.
 	sqlSelectUser = `
-	SELECT u.password, COALESCE(max(r.Id), 0)
+	SELECT u.password, COALESCE(count(r.Id), 0)
 	FROM public.users AS u 
 	LEFT JOIN public.user_records AS r ON u.login = r.user_login
 	WHERE login = $1
 	GROUP BY u.password`
 )
 
+// AddUser добавляет пользователя приложения.
 func (s *Storage) AddUser(ctx context.Context, login, password string) error {
 	log.Printf("БД. Добавление пользователя '%s' с хэшем пароля '%v'.\n", login, password)
 
@@ -57,7 +63,8 @@ func (s *Storage) AddUser(ctx context.Context, login, password string) error {
 	return nil
 }
 
-func (s *Storage) GetUser(ctx context.Context, login string) (passwordHash string, maxRecordId int, err error) {
+// GetUser возвращает пароль пользователя приложения и количество его записей о зашифрованных данных.
+func (s *Storage) GetUser(ctx context.Context, login string) (passwordHash string, recordCount int, err error) {
 	log.Printf("БД. Получение пользователя '%s'.\n", login)
 
 	if login == "" {
@@ -66,12 +73,12 @@ func (s *Storage) GetUser(ctx context.Context, login string) (passwordHash strin
 
 	row := s.conn.QueryRow(ctx, sqlSelectUser, login)
 
-	err = row.Scan(&passwordHash, &maxRecordId)
+	err = row.Scan(&passwordHash, &recordCount)
 	if err != nil {
 		log.Printf("БД. Ошибка при получении пользователя '%s', сообщение: %s.\n", login, err)
 		return "", 0, err
 	}
 
 	log.Printf("БД. Получение пользователя '%s' завершено успешно.\n", login)
-	return passwordHash, maxRecordId, nil
+	return passwordHash, recordCount, nil
 }

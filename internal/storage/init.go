@@ -1,3 +1,5 @@
+// Функция для создания необходимых для серверного приложения таблиц в БД.
+
 package storage
 
 import (
@@ -6,6 +8,7 @@ import (
 )
 
 const (
+	// sqlCreateTableUsers - SQL-запрос для создания в БД таблицы с информацией о пользователях приложения.
 	sqlCreateTableUsers = `
 		CREATE TABLE IF NOT EXISTS public.users
 		(
@@ -16,6 +19,8 @@ const (
 
 		TABLESPACE pg_default;`
 
+	// sqlCreateTableUserRecords - SQL-запрос для создания в БД таблицы с информацией о записях с зашифрованными данными пользователей.
+	// К ним относятся название записи, тип данных и текстовое примечание.
 	sqlCreateTableUserRecords = `
 		CREATE TABLE IF NOT EXISTS public.user_records
 		(
@@ -29,6 +34,7 @@ const (
 
 		TABLESPACE pg_default;`
 
+	// sqlCreateTableEncryptedPasswords - SQL-запрос для создания в БД таблицы с зашифрованными данными о логинах и паролях.
 	sqlCreateTableEncryptedPasswords = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_passwords
 		(
@@ -40,6 +46,7 @@ const (
 
 		TABLESPACE pg_default;`
 
+	// sqlCreateTableEncryptedBinaries - SQL-запрос для создания в БД таблицы с зашифрованными текстовыми и бинарными данными.
 	sqlCreateTableEncryptedBinaries = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_binaries
 		(
@@ -50,6 +57,7 @@ const (
 		
 		TABLESPACE pg_default;`
 
+	// sqlCreateTableEncryptedCards - SQL-запрос для создания в БД таблицы с зашифрованными данными банковских карт.
 	sqlCreateTableEncryptedCards = `
 		CREATE TABLE IF NOT EXISTS public.encrypted_cards
 		(
@@ -65,6 +73,7 @@ const (
 		TABLESPACE pg_default;`
 )
 
+// init последовательно создаёт в БД необходимые для работы приложения таблицы.
 func (s *Storage) init(ctx context.Context) error {
 	_, err := s.conn.Exec(ctx, sqlCreateTableUsers)
 	if err != nil {

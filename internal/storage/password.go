@@ -1,3 +1,5 @@
+// Функции для работы в БД с зашифрованными данными о логинах и паролях.
+
 package storage
 
 import (
@@ -11,17 +13,20 @@ import (
 )
 
 const (
+	// sqlInsertLoginPassword содержит SQL-запрос для добавления записи с зашифрованными данными о логине и пароле.
 	sqlInsertLoginPassword = `
 	INSERT INTO public.encrypted_passwords(
 	id, login, password)
 	VALUES ($1, $2, $3);
 `
+	// sqlSelectRecordLoginPassword содержит SQL-запрос для получения записи с зашифрованными данными о логине и пароле.
 	sqlSelectRecordLoginPassword = `
 	SELECT lp.login, lp.password 
 	FROM public.encrypted_passwords as lp 
 	INNER JOIN public.user_records as r ON r.id = lp.id
 	WHERE r.id = $1 AND r.user_login = $2
 `
+	// sqlUpdateRecordLoginPassword содержит SQL-запрос для изменения записи с зашифрованными данными о логине и пароле.
 	sqlUpdateRecordLoginPassword = `
 	UPDATE public.encrypted_passwords as lp
 	SET login = $3, password = $4
@@ -30,6 +35,15 @@ const (
 `
 )
 
+// AddLoginPassword добавляет запись о зашифрованных данных о логине и пароле пользователя, включая название, тип и метаданные.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого создаётся запись;
+// name - название записи;
+// login - зашифрованные данные о логине;
+// password - зашифрованные данные о пароле;
+// metadata - текстовое примечание к записи.
+// Метод возвращает идентификатор добавленной записи.
 func (s *Storage) AddLoginPassword(ctx context.Context, userLogin string, name string, login []byte, password []byte, metadata string) (int, error) {
 	log.Printf("БД. Добавление в таблицу encrypted_passwords записи о логине и пароле пользователя '%s' с названием '%v'.\n", userLogin, name)
 	if userLogin == "" {
@@ -71,6 +85,15 @@ func (s *Storage) AddLoginPassword(ctx context.Context, userLogin string, name s
 	return id, nil
 }
 
+// GetLoginPassword находит и возвращает зашифрованные данные о логине и пароле пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого ищется запись;
+// id - идентификатор записи.
+// Возвращаемые параметры:
+// зашифрованный логин в виде последовательности байт;
+// зашифрованный пароль в виде последовательности байт.
 func (s *Storage) GetLoginPassword(ctx context.Context, userLogin string, id int) ([]byte, []byte, error) {
 	log.Printf("БД. Поиск в таблице encrypted_passwords записи о логине и пароле пользователя '%s' с ID '%d'.\n", userLogin, id)
 	if userLogin == "" {
@@ -97,6 +120,14 @@ func (s *Storage) GetLoginPassword(ctx context.Context, userLogin string, id int
 	return storedLogin, storedPassword, nil
 }
 
+// ChangeLoginPassword находит и изменяет зашифрованные данные о логине и пароле пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого изменяется запись;
+// id - идентификатор записи;
+// login - новые зашифрованные данные о логине для изменения;
+// password - новые зашифрованные данные о пароле для изменения.
 func (s *Storage) ChangeLoginPassword(ctx context.Context, userLogin string, id int, login []byte, password []byte) error {
 	log.Printf("БД. Обновление записи о логине и пароле в таблице encrypted_passwords, пользователь '%s', ID записи '%d'.\n", userLogin, id)
 	if userLogin == "" {

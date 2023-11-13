@@ -1,3 +1,5 @@
+// Функции для работы в БД с зашифрованными данными банковских карт.
+
 package storage
 
 import (
@@ -10,17 +12,20 @@ import (
 )
 
 const (
+	// sqlInsertBankCard содержит SQL-запрос для добавления записи с зашифрованными данными о банковской карте.
 	sqlInsertBankCard = `
 	INSERT INTO public.encrypted_cards(
 	id, card_number, card_holder, expiry_year, expiry_month, cvc)
 	VALUES ($1, $2, $3, $4, $5, $6);
 `
+	// sqlSelectRecordBankCard содержит SQL-запрос для получения записи с зашифрованными данными о банковской карте.
 	sqlSelectRecordBankCard = `
 	SELECT bc.card_number, bc.card_holder, bc.expiry_year, bc.expiry_month, bc.cvc 
 	FROM public.encrypted_cards as bc
 	INNER JOIN public.user_records as r ON r.id = bc.id
 	WHERE r.id = $1 AND r.user_login = $2
 `
+	// sqlUpdateRecordBankCard содержит SQL-запрос для изменения записи с зашифрованными данными о банковской карте.
 	sqlUpdateRecordBankCard = `
 	UPDATE public.encrypted_cards as bc
 	SET card_number = $3, card_holder = $4, expiry_year = $5, expiry_month = $6, cvc = $7
@@ -29,14 +34,28 @@ const (
 `
 )
 
+// BankCard хранит данные об атрибутах банковской карты в зашифрованном виде (последовательность байт).
 type BankCard struct {
-	CardNumber  []byte
-	CardHolder  []byte
-	ExpiryYear  []byte
+	// CardNumber - номер банковской карты.
+	CardNumber []byte
+	// CardHolder - имя владельца банковской карты.
+	CardHolder []byte
+	// ExpiryYear - год окончания срока действия банковской карты.
+	ExpiryYear []byte
+	// ExpiryYear - месяц окончания срока действия банковской карты.
 	ExpiryMonth []byte
-	Cvc         []byte
+	// Cvc - CVC/CVV (код проверки карты)
+	Cvc []byte
 }
 
+// AddBankCard добавляет запись о зашифрованных данных банковской карты пользователя, включая название, тип и метаданные.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого создаётся запись;
+// name - название записи;
+// bankCard - зашифрованные данные о банковской карте;
+// metadata - текстовое примечание к записи.
+// Метод возвращает идентификатор добавленной записи.
 func (s *Storage) AddBankCard(ctx context.Context, userLogin string, name string, bankCard *BankCard, metadata string) (int, error) {
 	log.Printf("БД. Добавление в таблицу encrypted_cards записи о банковской карте пользователя '%s' с названием '%v'.\n", userLogin, name)
 	if userLogin == "" {
@@ -86,6 +105,12 @@ func (s *Storage) AddBankCard(ctx context.Context, userLogin string, name string
 	return id, nil
 }
 
+// GetBankCard находит и возвращает зашифрованные данные о банковской карте пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого ищется запись;
+// id - идентификатор записи.
 func (s *Storage) GetBankCard(ctx context.Context, userLogin string, id int) (*BankCard, error) {
 	log.Printf("БД. Поиск в таблице encrypted_cards записи о банковской карте пользователя '%s' с ID '%d'.\n", userLogin, id)
 	if userLogin == "" {
@@ -110,6 +135,13 @@ func (s *Storage) GetBankCard(ctx context.Context, userLogin string, id int) (*B
 	return &bankCard, nil
 }
 
+// ChangeBankCard находит и изменяет зашифрованные данные о банковской карте пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого изменяется запись;
+// id - идентификатор записи;
+// bankCard - новые зашифрованные данные о банковской карте для изменения.
 func (s *Storage) ChangeBankCard(ctx context.Context, userLogin string, id int, bankCard *BankCard) error {
 	log.Printf("БД. Обновление записи о банковской карте в таблице encrypted_cards, пользователь '%s', ID записи '%d'.\n", userLogin, id)
 	if userLogin == "" {

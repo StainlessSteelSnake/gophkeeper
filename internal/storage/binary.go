@@ -1,3 +1,5 @@
+// Функции для работы в БД с зашифрованными бинарными и текстовыми данными.
+
 package storage
 
 import (
@@ -10,17 +12,20 @@ import (
 )
 
 const (
+	// sqlInsertBinary содержит SQL-запрос для добавления записи с зашифрованным текстом или бинарными данными.
 	sqlInsertBinary = `
 	INSERT INTO public.encrypted_binaries(
 	id, binary_data)
 	VALUES ($1, $2);
 `
+	// sqlSelectRecordBinary содержит SQL-запрос для получения записи с зашифрованным текстом или бинарными данными по её идентификатору.
 	sqlSelectRecordBinary = `
 	SELECT b.binary_data 
 	FROM public.encrypted_binaries as b
 	INNER JOIN public.user_records as r ON r.id = b.id
 	WHERE r.Id = $1 AND r.user_login = $2
 `
+	// sqlSelectRecordBinary содержит SQL-запрос для изменения записи с зашифрованным текстом или бинарными данными по её идентификатору.
 	sqlUpdateRecordBinary = `
 	UPDATE public.encrypted_binaries as b
 	SET binary_data = $3
@@ -29,6 +34,15 @@ const (
 `
 )
 
+// addTextOrBinary добавляет запись о зашифрованных текстовых или бинарных данных пользователя, включая название, тип и метаданные.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого создаётся запись;
+// name - название записи;
+// binary - последовательность байт, представляющая зашифрованные текстовые или бинарные данные;
+// metadata - текстовое примечание к записи;
+// recordType - тип добавляемых данных: зашифрованные текстовые данные или зашифрованные бинарные данные.
+// Метод возвращает идентификатор добавленной записи.
 func (s *Storage) addTextOrBinary(ctx context.Context, userLogin string, name string, binary []byte, metadata string, recordType string) (int, error) {
 	if userLogin == "" {
 		return 0, errors.New("не указан логин пользователя")
@@ -68,6 +82,12 @@ func (s *Storage) addTextOrBinary(ctx context.Context, userLogin string, name st
 	return id, nil
 }
 
+// getTextOrBinary находит и возвращает зашифрованные текстовые или бинарные данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого ищется запись;
+// id - идентификатор записи.
 func (s *Storage) getTextOrBinary(ctx context.Context, userLogin string, id int) ([]byte, error) {
 	if userLogin == "" {
 		return nil, errors.New("не указан логин пользователя")
@@ -86,6 +106,13 @@ func (s *Storage) getTextOrBinary(ctx context.Context, userLogin string, id int)
 	return result, nil
 }
 
+// changeTextOrBinary находит и изменяет зашифрованные текстовые или бинарные данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого изменяется запись;
+// id - идентификатор записи;
+// binary- новые зашифрованные текстовые или бинарные данные для изменения.
 func (s *Storage) changeTextOrBinary(ctx context.Context, userLogin string, id int, binary []byte) error {
 	if userLogin == "" {
 		return errors.New("не указан логин пользователя")
@@ -104,6 +131,14 @@ func (s *Storage) changeTextOrBinary(ctx context.Context, userLogin string, id i
 	return nil
 }
 
+// AddText добавляет запись о зашифрованных текстовых данных пользователя, включая название, тип и метаданные.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого создаётся запись;
+// name - название записи;
+// text - последовательность байт, представляющая зашифрованные текстовые данные;
+// metadata - текстовое примечание к записи.
+// Метод возвращает идентификатор добавленной записи.
 func (s *Storage) AddText(ctx context.Context, userLogin string, name string, text []byte, metadata string) (int, error) {
 	log.Printf("БД. Добавление в таблицу encrypted_binary записи о тексте пользователя '%s' с названием '%v'.\n", userLogin, name)
 
@@ -116,16 +151,37 @@ func (s *Storage) AddText(ctx context.Context, userLogin string, name string, te
 	return id, nil
 }
 
+// GetText находит и возвращает зашифрованные текстовые данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого ищется запись;
+// id - идентификатор записи.
 func (s *Storage) GetText(ctx context.Context, userLogin string, id int) ([]byte, error) {
 	log.Printf("БД. Поиск в таблице encrypted_binaries записи о тексте пользователя '%s' с ID '%d'.\n", userLogin, id)
 	return s.getTextOrBinary(ctx, userLogin, id)
 }
 
+// ChangeText находит и изменяет зашифрованные текстовые данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого изменяется запись;
+// id - идентификатор записи;
+// text- новые зашифрованные текстовые данные для изменения.
 func (s *Storage) ChangeText(ctx context.Context, userLogin string, id int, text []byte) error {
 	log.Printf("БД. Обновление записи о тексте в таблице encrypted_binaries, пользователь '%s', ID записи '%d'.\n", userLogin, id)
 	return s.changeTextOrBinary(ctx, userLogin, id, text)
 }
 
+// AddBinary добавляет запись о зашифрованных бинарных данных пользователя, включая название, тип и метаданные.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого создаётся запись;
+// name - название записи;
+// binary - последовательность байт, представляющая зашифрованные бинарные данные;
+// metadata - текстовое примечание к записи.
+// Метод возвращает идентификатор добавленной записи.
 func (s *Storage) AddBinary(ctx context.Context, userLogin string, name string, binary []byte, metadata string) (int, error) {
 	log.Printf("БД. Добавление в таблицу encrypted_binaries записи о бинарных данных пользователя '%s' с названием '%v'.\n", userLogin, name)
 
@@ -138,11 +194,24 @@ func (s *Storage) AddBinary(ctx context.Context, userLogin string, name string, 
 	return id, nil
 }
 
+// GetBinary находит и возвращает зашифрованные бинарные данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого ищется запись;
+// id - идентификатор записи.
 func (s *Storage) GetBinary(ctx context.Context, userLogin string, id int) ([]byte, error) {
 	log.Printf("БД. Поиск в таблице encrypted_binaries записи о бинарных данных пользователя '%s' с ID '%d'.\n", userLogin, id)
 	return s.getTextOrBinary(ctx, userLogin, id)
 }
 
+// ChangeBinary находит и изменяет зашифрованные бинарные данные пользователя
+// по его имени и идентификатору записи.
+// Входные параметры:
+// ctx - контекст для контроля цепочки исполнения программы;
+// userLogin - имя пользователя, для которого изменяется запись;
+// id - идентификатор записи;
+// binary - новые зашифрованные бинарные данные для изменения.
 func (s *Storage) ChangeBinary(ctx context.Context, userLogin string, id int, binary []byte) error {
 	log.Printf("БД. Обновление записи о бинарных данных в таблице encrypted_binaries, пользователь '%s', ID записи '%d'.\n", userLogin, id)
 	return s.changeTextOrBinary(ctx, userLogin, id, binary)

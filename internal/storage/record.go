@@ -1,3 +1,6 @@
+// Функции для работы в БД с записями о зашифрованных данных пользователя,
+// включая названия, типы и текстовые примечания этих записей).
+
 package storage
 
 import (
@@ -12,60 +15,76 @@ import (
 )
 
 const (
+	// sqlInsertRecord содержит SQL-запрос для добавления записи о зашифрованных данных пользователя:
+	// название, тип данных, примечание.
 	sqlInsertRecord = `
 	INSERT INTO public.user_records(
 	user_login, record_type, name, metadata)
 	VALUES ($1, $2, $3, $4)
 	RETURNING id;
 `
+	// sqlSelectUserRecords содержит SQL-запрос для получения списка записей пользователя.
 	sqlSelectUserRecords = `
 	SELECT id, record_type, name 
 	FROM public.user_records
 	WHERE user_login = $1
 `
+	// sqlSelectUserRecordMetadata содержит SQL-запрос для получения примечания к записи пользователя.
 	sqlSelectUserRecordMetadata = `
 	SELECT id, record_type, name, metadata
 	FROM public.user_records
 	WHERE id = $1 AND user_login = $2
 `
+	// sqlUpdateUserRecordName содержит SQL-запрос для изменения названия записи о зашифрованных данных пользователя.
 	sqlUpdateUserRecordName = `
 	UPDATE public.user_records
 	SET name = $3
 	WHERE id = $1 AND user_login = $2
 `
+	// sqlUpdateUserRecordMetadata содержит SQL-запрос для изменения примечания к записи о зашифрованных данных пользователя.
 	sqlUpdateUserRecordMetadata = `
 	UPDATE public.user_records
 	SET metadata = $3
 	WHERE id = $1 AND user_login = $2
 `
+	// sqlUpdateUserRecordNameMetadata содержит SQL-запрос для изменения названия и примечания записи о зашифрованных данных пользователя.
 	sqlUpdateUserRecordNameMetadata = `
 	UPDATE public.user_records
 	SET name = $3, metadata = $4
 	WHERE id = $1 AND user_login = $2
 `
+	// sqlDeleteUserRecord содержит SQL-запрос для удаления записи о зашифрованных данных пользователя.
 	sqlDeleteUserRecord = `
 	DELETE FROM public.user_records
 	WHERE id = $1 AND user_login = $2
 `
 
-	recordTypeLoginPassword            = "LOGIN_PASSWORD"
+	// Список типов зашифрованных данных и описаний к этим типам.
+	recordTypeLoginPassword            = "LOGIN_PASSWORD" // Логин и пароль
 	recordTypeLoginPasswordDescription = "Логин и пароль"
-	recordTypeText                     = "TEXT"
+	recordTypeText                     = "TEXT" // Текстовые данные
 	recordTypeTextDescription          = "Текст"
-	recordTypeBinary                   = "BINARY"
+	recordTypeBinary                   = "BINARY" // Бинарные данные
 	recordTypeBinaryDescription        = "Бинарные данные"
-	recordTypeBankCard                 = "BANK_CARD"
+	recordTypeBankCard                 = "BANK_CARD" // Банковская карта
 	recordTypeBankCardDescription      = "Банковская карта"
 )
 
+// Record хранит запись о зашифрованных данных пользователя.
 type Record struct {
-	UserLogin  string
-	Id         int
+	// UserLogin - имя пользователя.
+	UserLogin string
+	// Id - идентификатор записи.
+	Id int
+	// RecordType - тип зашифрованных данных.
 	RecordType string
-	Name       string
-	Metadata   string
+	// Name - название записи.
+	Name string
+	// Metadata - текстовое примечание к записи.
+	Metadata string
 }
 
+// getRecordType возвращает описание типа зашифрованных данных.
 func getRecordType(rt string) string {
 	switch rt {
 	case recordTypeLoginPassword:
@@ -81,6 +100,7 @@ func getRecordType(rt string) string {
 	return rt
 }
 
+// addRecord добавляет запись о зашифрованных данных пользователя.
 func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
 	log.Printf("БД. Добавление в таблицу user_records записи пользователя '%s' с типом '%s' и названием '%v'.\n", r.UserLogin, r.RecordType, r.Name)
 
@@ -110,6 +130,7 @@ func (s *Storage) addRecord(ctx context.Context, r *Record) (int, error) {
 	return recordId, nil
 }
 
+// GetRecords находит и возвращает список записей о зашифрованных данных пользователя по его имени.
 func (s *Storage) GetRecords(ctx context.Context, userLogin string) ([]Record, error) {
 	log.Printf("БД. Получение списка записей пользователя '%s'.\n", userLogin)
 
@@ -145,6 +166,7 @@ func (s *Storage) GetRecords(ctx context.Context, userLogin string) ([]Record, e
 	return result, nil
 }
 
+// GetRecord находит и возвращает запись о зашифрованных данных пользователя по его имени и идентификатору записи.
 func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Record, error) {
 	log.Printf("БД. Получение записи c ID '%d' для пользователя '%s'.\n", id, userLogin)
 
@@ -173,6 +195,7 @@ func (s *Storage) GetRecord(ctx context.Context, userLogin string, id int) (*Rec
 	return &result, nil
 }
 
+// ChangeRecord изменяет запись о зашифрованных данных пользователя.
 func (s *Storage) ChangeRecord(ctx context.Context, r *Record) error {
 	log.Printf("БД. Изменение записи c ID '%d' для пользователя '%s'.\n", r.Id, r.UserLogin)
 
@@ -207,6 +230,7 @@ func (s *Storage) ChangeRecord(ctx context.Context, r *Record) error {
 	return nil
 }
 
+// DeleteRecord изменяет запись о зашифрованных данных пользователя.
 func (s *Storage) DeleteRecord(ctx context.Context, userLogin string, id int) error {
 	log.Printf("БД. Удаление записи c ID '%d' для пользователя '%s'.\n", id, userLogin)
 
