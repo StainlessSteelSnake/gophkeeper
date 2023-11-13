@@ -2,20 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	conf "github.com/StainlessSteelSnake/gophkeeper/app/client/config"
 
 	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 	"github.com/spf13/cobra"
 )
 
-type Configurator interface {
-	SetToken(string) error
-	GetToken() string
-	SetKeyPhrase(string) error
-	GetKeyPhrase() string
-	SetVersion(string, string)
-	GetVersion() (string, string)
-}
+var ServerAddress string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -25,6 +21,15 @@ var rootCmd = &cobra.Command{
 	- a site login and password;
 	- a bank card credentials;
 	- text, files and so on...`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if cmd.Flag("address").Changed {
+			config.SetServerAddress(cmd.Flag("address").Value.String())
+		}
+		client, clientClose = clientInit(config)
+	},
+	PersistentPostRun: func(cmd *cobra.Command, args []string) {
+		clientClose()
+	},
 }
 
 var versionCmd = &cobra.Command{
@@ -43,24 +48,34 @@ var versionCmd = &cobra.Command{
 			fmt.Println("Дата и время сборки:", buildTime)
 		}
 	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	},
+	PersistentPostRun: func(cmd *cobra.Command, args []string) {
+	},
 }
 
+var config conf.Configurator
+var clientInit func(cfg conf.Configurator) (services.GophKeeperClient, func() error)
+var clientClose func() error
 var client services.GophKeeperClient
-var config Configurator
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(cln services.GophKeeperClient, cfg Configurator) {
-	if cln == nil || cfg == nil {
+func init() {
+	rootCmd.PersistentFlags().StringVarP(&ServerAddress, "address", "a", ":3200", "A gRPC server address to connect to.")
+	rootCmd.AddCommand(versionCmd)
+}
+
+func Execute(initFunc func(cfg conf.Configurator) (services.GophKeeperClient, func() error), cfg conf.Configurator) {
+	if initFunc == nil || cfg == nil {
 		os.Exit(1)
 	}
-	client = cln
 	config = cfg
-
-	rootCmd.AddCommand(versionCmd)
+	clientInit = initFunc
 
 	err := rootCmd.Execute()
 	if err != nil {
+		log.Println(err)
 		os.Exit(1)
 	}
 }

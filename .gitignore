@@ -20,9 +20,9 @@
 # Go workspace file
 go.work
 /vendor/
-/gophkeeper.yaml
 .DS_Store
 app/.DS_Store
 app/client/.DS_Store
 /.idea/
 *.DS_Store
+gophkeeper.yaml
