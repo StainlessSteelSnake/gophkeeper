@@ -120,6 +120,8 @@ func init() {
 	signCmd.MarkFlagRequired("password")
 	signUpCmd.MarkFlagRequired("user")
 	signUpCmd.MarkFlagRequired("password")
+	signInCmd.MarkFlagRequired("user")
+	signInCmd.MarkFlagRequired("password")
 
 	signCmd.AddCommand(signUpCmd)
 	signCmd.AddCommand(signInCmd)
