@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ var binaryAddCmd = &cobra.Command{
 			log.Fatalln(errors.New("не указано название сохраняемой записи"))
 		}
 
-		binary, err := inout.ReadBytes()
+		binary, err := inout.ReadBytes(os.Stdin)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -125,7 +126,7 @@ var binaryShowCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		inout.WriteBytes(decryptedBytes)
+		inout.WriteBytes(decryptedBytes, os.Stdout)
 	},
 }
 
@@ -150,7 +151,7 @@ var binaryChangeCmd = &cobra.Command{
 			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
 		}
 
-		binary, err := inout.ReadBytes()
+		binary, err := inout.ReadBytes(os.Stdin)
 		if err != nil {
 			log.Fatalln(err)
 		}

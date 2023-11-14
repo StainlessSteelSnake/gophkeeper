@@ -2,12 +2,12 @@ package inout
 
 import (
 	"bufio"
-	"os"
+	"io"
 )
 
 // WriteStrings записывает текстовые данные в стандартный источник вывода (консоль или файл).
-func WriteStrings(s []string) error {
-	buf := bufio.NewWriter(os.Stdout)
+func WriteStrings(s []string, out io.Writer) error {
+	buf := bufio.NewWriter(out)
 
 	for _, line := range s {
 		_, err := buf.WriteString(line)
@@ -20,9 +20,10 @@ func WriteStrings(s []string) error {
 	return nil
 }
 
-// WriteStrings записывает бинарные данные в стандартный источник вывода (консоль или файл).
-func WriteBytes(b []byte) {
-	buf := bufio.NewWriter(os.Stdout)
+// WriteBytes записывает бинарные данные в стандартный источник вывода (консоль или файл).
+func WriteBytes(b []byte, out io.Writer) {
+	buf := bufio.NewWriter(out)
 
 	buf.Write(b)
+	buf.Flush()
 }

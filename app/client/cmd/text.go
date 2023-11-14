@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ var textAddCmd = &cobra.Command{
 			log.Fatalln(errors.New("не указано название сохраняемой записи"))
 		}
 
-		text := inout.ReadStringAsBytes()
+		text := inout.ReadStringAsBytes(os.Stdin)
 		if len(text) == 0 {
 			log.Fatalln(errors.New("не передан текст для сохранения"))
 		}
@@ -123,7 +124,7 @@ var textShowCmd = &cobra.Command{
 
 		fmt.Println("Полученный текст приведён ниже")
 		fmt.Println("------------------------------")
-		inout.WriteBytes(decryptedText)
+		inout.WriteBytes(decryptedText, os.Stdout)
 	},
 }
 
@@ -148,7 +149,7 @@ var textChangeCmd = &cobra.Command{
 			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
 		}
 
-		text := inout.ReadStringAsBytes()
+		text := inout.ReadStringAsBytes(os.Stdin)
 		if len(text) == 0 {
 			log.Fatalln(errors.New("не передан текст для изменения"))
 		}
