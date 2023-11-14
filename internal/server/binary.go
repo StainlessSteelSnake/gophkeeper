@@ -10,6 +10,7 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
+// AddText предоставляет сервис сохранения текстовых данных в зашифрованном виде.
 func (s *Server) AddText(ctx context.Context, in *srs.AddTextRequest) (*srs.AddTextResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи о тексте (AddText) со входными данными: Token=%s.\n", in.Token.Token)
 
@@ -37,6 +38,8 @@ func (s *Server) AddText(ctx context.Context, in *srs.AddTextRequest) (*srs.AddT
 
 	return &response, nil
 }
+
+// GetText предоставляет сервис получения сохранённых текстовых данных в зашифрованном виде.
 func (s *Server) GetText(ctx context.Context, in *srs.GetTextRequest) (*srs.GetTextResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения записи о тексте (GetText) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -58,6 +61,8 @@ func (s *Server) GetText(ctx context.Context, in *srs.GetTextRequest) (*srs.GetT
 
 	return &response, nil
 }
+
+// ChangeText предоставляет сервис изменения сохранённых текстовых данных в зашифрованном виде.
 func (s *Server) ChangeText(ctx context.Context, in *srs.ChangeTextRequest) (*srs.ChangeTextResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи о тексте (ChangeText) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -77,6 +82,8 @@ func (s *Server) ChangeText(ctx context.Context, in *srs.ChangeTextRequest) (*sr
 
 	return &response, nil
 }
+
+// AddBytes предоставляет сервис сохранения бинарных данных в зашифрованном виде.
 func (s *Server) AddBytes(ctx context.Context, in *srs.AddBytesRequest) (*srs.AddBytesResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи о бинарных данных (AddBytes) со входными данными: Token=%s.\n", in.Token.Token)
 
@@ -104,6 +111,8 @@ func (s *Server) AddBytes(ctx context.Context, in *srs.AddBytesRequest) (*srs.Ad
 
 	return &response, nil
 }
+
+// GetBytes предоставляет сервис получения сохранённых бинарных данных в зашифрованном виде.
 func (s *Server) GetBytes(ctx context.Context, in *srs.GetBytesRequest) (*srs.GetBytesResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения записи о бинарных данных (GetBytes) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -125,6 +134,8 @@ func (s *Server) GetBytes(ctx context.Context, in *srs.GetBytesRequest) (*srs.Ge
 
 	return &response, nil
 }
+
+// ChangeBytes предоставляет сервис изменения сохранённых бинарных данных.
 func (s *Server) ChangeBytes(ctx context.Context, in *srs.ChangeBytesRequest) (*srs.ChangeBytesResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи о бинарных данных (ChangeBytes) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 

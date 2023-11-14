@@ -11,6 +11,7 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
+// AddBankCard предоставляет сервис сохранения данных банковской карты в зашифрованном виде.
 func (s *Server) AddBankCard(ctx context.Context, in *srs.AddBankCardRequest) (*srs.AddBankCardResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи о банковской карте (AddBankCard) со входными данными: Token=%s.\n", in.Token.Token)
 
@@ -47,6 +48,7 @@ func (s *Server) AddBankCard(ctx context.Context, in *srs.AddBankCardRequest) (*
 	return &response, nil
 }
 
+// GetBankCard предоставляет сервис получения сохранённых данных банковской карты в зашифрованном виде.
 func (s *Server) GetBankCard(ctx context.Context, in *srs.GetBankCardRequest) (*srs.GetBankCardResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения записи о банковской карте (GetBankCard) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -75,6 +77,7 @@ func (s *Server) GetBankCard(ctx context.Context, in *srs.GetBankCardRequest) (*
 	return &response, nil
 }
 
+// ChangeBankCard предоставляет сервис изменения сохранённых данных банковской карты.
 func (s *Server) ChangeBankCard(ctx context.Context, in *srs.ChangeBankCardRequest) (*srs.ChangeBankCardResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи о банковской карте (ChangeLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 

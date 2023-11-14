@@ -13,15 +13,17 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
-var storedLogin string
-var storedPassword string
+var storedLogin string    // Переданный логин для сохранения в зашифрованном виде.
+var storedPassword string // Переданный пароль для сохранения в зашифрованном виде.
 
+// passwordCmd описывает набор команд для работы с логинами и паролями.
 var passwordCmd = &cobra.Command{
 	Use:   "password",
 	Short: "Adds, shows and changes stored login and password.",
 	Long:  `Adds, shows and changes stored login and password.`,
 }
 
+// passwordAddCmd описывает команду для сохранения логина и пароля в зашифрованном виде.
 var passwordAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new login and password to the storage.",
@@ -91,6 +93,7 @@ var passwordAddCmd = &cobra.Command{
 	},
 }
 
+// passwordShowCmd описывает команду для получения и отображения сохранённых логина и пароля.
 var passwordShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show stored login and password.",
@@ -147,6 +150,7 @@ var passwordShowCmd = &cobra.Command{
 	},
 }
 
+// passwordChangeCmd описывает команду для изменения сохранённых логина и пароля.
 var passwordChangeCmd = &cobra.Command{
 	Use:   "change",
 	Short: "Change existing login and password.",
@@ -215,6 +219,7 @@ var passwordChangeCmd = &cobra.Command{
 	},
 }
 
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	passwordAddCmd.PersistentFlags().StringVarP(&storedLogin, "login", "l", "", "A login to store")
 	passwordAddCmd.PersistentFlags().StringVarP(&storedPassword, "password", "p", "", "A password to store")

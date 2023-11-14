@@ -11,9 +11,13 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
-var ServerAddress string
+var ServerAddress string                                                             // IP-адрес и порт для подключения к серверу приложения.
+var config conf.Configurator                                                         // Контроллер параметров приложения.
+var clientInit func(cfg conf.Configurator) (services.GophKeeperClient, func() error) // Инициализатор подключения к серверу приложения.
+var clientClose func() error                                                         // Функция отключения от сервера приложения.
+var client services.GophKeeperClient                                                 // gRPC-клиент для передачи данных на сервер приложения.
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd описывает набор команд клиентского приложения.
 var rootCmd = &cobra.Command{
 	Use:   "gophkeeper",
 	Short: "GophKeeper is a secure storage for your data",
@@ -32,6 +36,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// versionCmd описывает команду для отображения версии, даты и времени сборки клиентского приложения.
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Shows current version and build date/time of GophKeeper",
@@ -54,18 +59,13 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-var config conf.Configurator
-var clientInit func(cfg conf.Configurator) (services.GophKeeperClient, func() error)
-var clientClose func() error
-var client services.GophKeeperClient
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&ServerAddress, "address", "a", ":3200", "A gRPC server address to connect to.")
 	rootCmd.AddCommand(versionCmd)
 }
 
+// Execute запускает обработку команд пользователя.
 func Execute(initFunc func(cfg conf.Configurator) (services.GophKeeperClient, func() error), cfg conf.Configurator) {
 	if initFunc == nil || cfg == nil {
 		os.Exit(1)

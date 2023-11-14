@@ -12,10 +12,11 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
-var recordId string
-var recordName string
-var recordMetadata string
+var recordId string       // Идентификатор записи о сохранённых зашифрованных данных.
+var recordName string     // Название записи с сохранёнными зашифрованными данными.
+var recordMetadata string // Примечание к записи с сохранёнными зашифрованными данными.
 
+// recordCmd описывает набор команд для работы с сохранёнными записями о зашифрованных данных.
 var recordCmd = &cobra.Command{
 	Use:   "record",
 	Short: "CRUD operations with records.",
@@ -25,6 +26,7 @@ var recordCmd = &cobra.Command{
     - delete a record.`,
 }
 
+// recordListCmd описывает команду для получения и отображения списка записей о зашифрованных данных.
 var recordListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Shows list of saved records.",
@@ -61,6 +63,7 @@ var recordListCmd = &cobra.Command{
 	},
 }
 
+// recordShowCmd описывает команду для получения и отображения подробной информации о записи.
 var recordShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Shows name, type and metadata of a record.",
@@ -100,6 +103,7 @@ var recordShowCmd = &cobra.Command{
 	},
 }
 
+// recordChangeCmd описывает команду для изменения названия и/или примечания записи.
 var recordChangeCmd = &cobra.Command{
 	Use:   "change",
 	Short: "Change name and/or metadata of a record.",
@@ -144,6 +148,7 @@ var recordChangeCmd = &cobra.Command{
 	},
 }
 
+// recordDeleteCmd описывает команду для удаления записи.
 var recordDeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete a record.",
@@ -216,6 +221,7 @@ var recordDeleteCmd = &cobra.Command{
 	},
 }
 
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	recordShowCmd.PersistentFlags().StringVarP(&recordId, "id", "i", "", "The ID of required record")
 	recordShowCmd.MarkFlagRequired("id")

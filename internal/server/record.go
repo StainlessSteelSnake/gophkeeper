@@ -11,6 +11,7 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
+// GetUserRecords предоставляет сервис получения списка записей с зашифрованными данными пользователя.
 func (s *Server) GetUserRecords(ctx context.Context, in *srs.GetUserRecordsRequest) (*srs.GetUserRecordsResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения списка записей пользователя (GetUserRecords) со входными данными: %s.\n", in.Token.Token)
 
@@ -45,6 +46,7 @@ func (s *Server) GetUserRecords(ctx context.Context, in *srs.GetUserRecordsReque
 	return &response, nil
 }
 
+// GetUserRecord предоставляет сервис получения описания записи с зашифрованными данными пользователя.
 func (s *Server) GetUserRecord(ctx context.Context, in *srs.GetUserRecordRequest) (*srs.GetUserRecordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения записи пользователя (GetUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -73,6 +75,7 @@ func (s *Server) GetUserRecord(ctx context.Context, in *srs.GetUserRecordRequest
 	return &response, nil
 }
 
+// ChangeUserRecord предоставляет сервис изменения названия и/или примечания записи с зашифрованными данными пользователя.
 func (s *Server) ChangeUserRecord(ctx context.Context, in *srs.ChangeUserRecordRequest) (*srs.ChangeUserRecordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи (ChangeUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.UserRecord.Id)
 
@@ -100,6 +103,7 @@ func (s *Server) ChangeUserRecord(ctx context.Context, in *srs.ChangeUserRecordR
 	return &response, nil
 }
 
+// DeleteUserRecord предоставляет сервис удаления записи с зашифрованными данными пользователя.
 func (s *Server) DeleteUserRecord(ctx context.Context, in *srs.DeleteUserRecordRequest) (*srs.DeleteUserRecordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса удаления записи (DeleteUserRecord) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 

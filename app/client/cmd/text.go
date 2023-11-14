@@ -14,12 +14,14 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
+// textCmd описывает набор команд для работы с текстовыми данными.
 var textCmd = &cobra.Command{
 	Use:   "text",
 	Short: "Adds, shows and changes stored texts.",
 	Long:  `Adds, shows and changes stored texts.`,
 }
 
+// textAddCmd описывает команду для сохранения текстовых данных в зашифрованном виде.
 var textAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new text to the storage.",
@@ -73,6 +75,7 @@ var textAddCmd = &cobra.Command{
 	},
 }
 
+// textShowCmd описывает команду для получения сохранённых текстовых данных.
 var textShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show stored text.",
@@ -124,6 +127,7 @@ var textShowCmd = &cobra.Command{
 	},
 }
 
+// textChangeCmd описывает команду для изменения сохранённых текстовых данных.
 var textChangeCmd = &cobra.Command{
 	Use:   "change",
 	Short: "Change existing text.",
@@ -179,6 +183,7 @@ var textChangeCmd = &cobra.Command{
 	},
 }
 
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	textAddCmd.PersistentFlags().StringVarP(&recordName, "name", "n", "", "A name of stored record")
 	textAddCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")

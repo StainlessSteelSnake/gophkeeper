@@ -11,12 +11,14 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
+// Server обслуживает запросы пользователя, а также хранит ссылки на контроллеры для работы с БД и авторизацией.
 type Server struct {
 	srs.UnimplementedGophKeeperServer
 	storageController storage.Storager
 	authenticator     auth.Authenticator
 }
 
+// NewServer создаёт и запускает экземпляр gRPC-сервера приложения.
 func NewServer(storageController storage.Storager, authenticator auth.Authenticator, network, address string) (*Server, error) {
 	if storageController == nil {
 		return nil, errors.New("не задан контроллер хранилища данных")

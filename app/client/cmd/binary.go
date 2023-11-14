@@ -14,12 +14,14 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
+// binaryCmd описывает набор команд для работы с бинарными данными.
 var binaryCmd = &cobra.Command{
 	Use:   "binary",
 	Short: "Adds, shows and changes stored binary data.",
 	Long:  `Adds, shows and changes stored binary data.`,
 }
 
+// binaryAddCmd описывает команду для сохранения бинарных данных в зашифрованном виде.
 var binaryAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new binary data to the storage.",
@@ -77,6 +79,7 @@ var binaryAddCmd = &cobra.Command{
 	},
 }
 
+// binaryShowCmd описывает команду для получения сохранённых бинарных данных.
 var binaryShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show stored binary data.",
@@ -126,6 +129,7 @@ var binaryShowCmd = &cobra.Command{
 	},
 }
 
+// binaryChangeCmd описывает команду для изменения сохранённых бинарных данных.
 var binaryChangeCmd = &cobra.Command{
 	Use:   "change",
 	Short: "Change existing binary data.",
@@ -184,6 +188,7 @@ var binaryChangeCmd = &cobra.Command{
 	},
 }
 
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	binaryAddCmd.PersistentFlags().StringVarP(&recordName, "name", "n", "", "A name of stored record")
 	binaryAddCmd.PersistentFlags().StringVarP(&recordMetadata, "metadata", "m", "", "Metadata of stored record")

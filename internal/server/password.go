@@ -12,6 +12,7 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/storage"
 )
 
+// AddLoginPassword предоставляет сервис сохранения логина и пароля в зашифрованном виде.
 func (s *Server) AddLoginPassword(ctx context.Context, in *srs.AddLoginPasswordRequest) (*srs.AddLoginPasswordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса добавления записи c логином и паролем (AddLoginPassword) со входными данными: Token=%s.\n", in.Token.Token)
 
@@ -41,6 +42,7 @@ func (s *Server) AddLoginPassword(ctx context.Context, in *srs.AddLoginPasswordR
 	return &response, nil
 }
 
+// GetLoginPassword предоставляет сервис получения сохранённого логина и пароля в зашифрованном виде.
 func (s *Server) GetLoginPassword(ctx context.Context, in *srs.GetLoginPasswordRequest) (*srs.GetLoginPasswordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса получения записи c логином и паролем (GetLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 
@@ -71,6 +73,7 @@ func (s *Server) GetLoginPassword(ctx context.Context, in *srs.GetLoginPasswordR
 	return &response, nil
 }
 
+// ChangeLoginPassword предоставляет сервис изменения сохранённого логина и пароля.
 func (s *Server) ChangeLoginPassword(ctx context.Context, in *srs.ChangeLoginPasswordRequest) (*srs.ChangeLoginPasswordResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса изменения записи c логином и паролем (ChangeLoginPassword) со входными данными: Token=%s, ID='%d'.\n", in.Token.Token, in.Id)
 

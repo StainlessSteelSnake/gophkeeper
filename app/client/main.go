@@ -17,8 +17,8 @@ import (
 //go:generate ./generate.sh
 
 var (
-	Version   string //
-	BuildTime string
+	Version   string // Версия клиентского приложения.
+	BuildTime string // Дата и время сборки клиентского приложения.
 )
 
 func main() {
@@ -35,6 +35,7 @@ func main() {
 	cmd.Execute(grpcInit, cfg)
 }
 
+// grpcInit создаёт gRPC-клиент и устанавливает соединение с сервером приложения.
 func grpcInit(cfg config.Configurator) (srs.GophKeeperClient, func() error) {
 	// установка соединения с gRPC-сервером
 	conn, err := grpc.Dial(cfg.GetServerAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))

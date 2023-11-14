@@ -13,14 +13,20 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
-var storedCardNumber, storedCardHolder, storedCardExpiryYear, storedCardExpiryMonth, storedCardCvc string
+var storedCardNumber, // Переданный номер банковской карты.
+	storedCardHolder, // Переданное имя владельца банковской карты.
+	storedCardExpiryYear, // Переданный год истечения срока действия банковской карты.
+	storedCardExpiryMonth, // Переданный месяц истечения срока действия банковской карты.
+	storedCardCvc string // Переданный CVC/CVV банковской карты.
 
+// cardCmd описывает набор команд для работы с банковскими картами.
 var cardCmd = &cobra.Command{
 	Use:   "card",
 	Short: "Adds, shows and changes stored bank card.",
 	Long:  `Adds, shows and changes stored bank card.`,
 }
 
+// cardAddCmd описывает команду для сохранения данных банковской карты в зашифрованном виде.
 var cardAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add new bank card to the storage.",
@@ -135,6 +141,7 @@ var cardAddCmd = &cobra.Command{
 	},
 }
 
+// cardShowCmd описывает команду для получения и отображения сохранённых данных банковской карты.
 var cardShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show stored bank card.",
@@ -208,6 +215,7 @@ var cardShowCmd = &cobra.Command{
 	},
 }
 
+// cardChangeCmd описывает команду для изменения сохранённых данных банковской карты.
 var cardChangeCmd = &cobra.Command{
 	Use:   "change",
 	Short: "Change existing bank card.",
@@ -319,6 +327,7 @@ var cardChangeCmd = &cobra.Command{
 	},
 }
 
+// init добавляет флаги команд и добавляет сами команды в иерархическую структуру.
 func init() {
 	cardAddCmd.PersistentFlags().StringVar(&storedCardNumber, "number", "", "A login to store")
 	cardAddCmd.PersistentFlags().StringVar(&storedCardHolder, "holder", "", "A password to store")
@@ -351,6 +360,7 @@ func init() {
 	rootCmd.AddCommand(cardCmd)
 }
 
+// checkYear проверяет корректность указанного пользователем года истечения срока действия банковской карты.
 func checkYear(y string) (int, error) {
 	year, err := strconv.Atoi(y)
 	if err != nil {
@@ -364,6 +374,7 @@ func checkYear(y string) (int, error) {
 	return year, nil
 }
 
+// checkMonth проверяет корректность указанного пользователем месяца истечения срока действия банковской карты.
 func checkMonth(m string) (int, error) {
 	month, err := strconv.Atoi(m)
 	if err != nil {
@@ -377,6 +388,7 @@ func checkMonth(m string) (int, error) {
 	return month, nil
 }
 
+// checkCvc проверяет корректность указанного пользователем CVC/CVV банковской карты.
 func checkCvc(c string) (int, error) {
 	cvc, err := strconv.Atoi(c)
 	if err != nil {

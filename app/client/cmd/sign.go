@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -25,7 +24,7 @@ var signUpCmd = &cobra.Command{
 	Long:  `Register to GophKeeper server with user name and password.`,
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("User:", cmd.Flag("user").Value, ", Password:", cmd.Flag("password").Value, ".")
+		//fmt.Println("User:", cmd.Flag("user").Value, ", Password:", cmd.Flag("password").Value, ".")
 
 		registerRequest := srs.RegisterRequest{
 			LoginPassword: &srs.LoginPassword{
@@ -74,7 +73,7 @@ var signInCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Println(loginResponse)
+		//log.Println(loginResponse)
 
 		err = config.SetToken(loginResponse.Token.Token)
 		if err != nil {

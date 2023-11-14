@@ -10,6 +10,7 @@ import (
 	srs "github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
+// Register предоставляет сервис регистрации на сервере приложения.
 func (s *Server) Register(ctx context.Context, in *srs.RegisterRequest) (*srs.RegisterResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса регистрации (Register) со входными данными: %v.\n", in.LoginPassword)
 
@@ -28,6 +29,7 @@ func (s *Server) Register(ctx context.Context, in *srs.RegisterRequest) (*srs.Re
 	return &response, nil
 }
 
+// Login предоставляет сервис входа в учётную запись существующего пользователя.
 func (s *Server) Login(ctx context.Context, in *srs.LoginRequest) (*srs.LoginResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса авторизации (Login) со входными данными: %v.\n", in.LoginPassword)
 
@@ -46,6 +48,7 @@ func (s *Server) Login(ctx context.Context, in *srs.LoginRequest) (*srs.LoginRes
 	return &response, nil
 }
 
+// Logout предоставляет сервисы выхода авторизованного пользователя из учётной записи.
 func (s *Server) Logout(ctx context.Context, in *srs.LogoutRequest) (*srs.LogoutResponse, error) {
 	log.Printf("gRPC-Сервер. Вызов сервиса выхода из учётной записи (Logout) со входными данными: %s.\n", in.Token.Token)
 
