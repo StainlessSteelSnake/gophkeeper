@@ -27,3 +27,4 @@ app/client/.DS_Store
 *.DS_Store
 gophkeeper.yaml
 /app/client/test.txt
+/profile.txt

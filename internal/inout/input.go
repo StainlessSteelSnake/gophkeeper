@@ -41,7 +41,7 @@ func ReadStringAsBytes(in io.Reader) []byte {
 // из стандартного источника ввода (консоль или файл).
 func ReadBytes(in io.Reader) ([]byte, error) {
 	buf := bufio.NewReader(in)
-	var result []byte
+	var result = make([]byte, 0)
 	var byteBuffer = make([]byte, buf.Size())
 
 	var count int
@@ -59,9 +59,5 @@ func ReadBytes(in io.Reader) ([]byte, error) {
 		return result, nil
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return nil, err
 }

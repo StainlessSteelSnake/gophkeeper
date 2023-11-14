@@ -16,21 +16,35 @@ func TestReadStrings(t *testing.T) {
 		want  []string
 	}{
 		{
-			name:  "Успешное чтение строк",
+			name:  "Чтение пустого набора строк",
+			input: []string{},
+			want:  []string{},
+		},
+		{
+			name:  "Чтение одной строки",
 			input: []string{"Строка для проверки"},
 			want:  []string{"Строка для проверки"},
+		},
+		{
+			name:  "Чтение нескольких строк",
+			input: []string{"Строка для проверки 1", "Строка для проверки 2", "Строка для проверки 3"},
+			want:  []string{"Строка для проверки 1", "Строка для проверки 2", "Строка для проверки 3"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			for _, s := range tt.input {
-				r := strings.NewReader(s)
-				result := ReadStrings(r)
-				assert.Equal(t, tt.want, result)
+			var in string
+			for i, s := range tt.input {
+				in = in + s
+				if i < len(tt.input)-1 {
+					in = in + "\n"
+				}
 			}
 
+			result := ReadStrings(strings.NewReader(in))
+			assert.Equal(t, tt.want, result)
 		})
 	}
 }
@@ -38,22 +52,39 @@ func TestReadStrings(t *testing.T) {
 func TestReadStringAsBytes(t *testing.T) {
 	tests := []struct {
 		name  string
-		input string
+		input []string
 		want  []byte
 	}{
 		{
-			name:  "Успешное чтение строк как последовательности байт",
-			input: "Строка для проверки",
+			name:  "Чтение пустого набора строк как последовательности байт",
+			input: []string{},
+			want:  []byte{},
+		},
+		{
+			name:  "Чтение одной строки как последовательности байт",
+			input: []string{"Строка для проверки"},
 			want:  []byte("Строка для проверки"),
+		},
+		{
+			name:  "Чтение нескольких строк как последовательности байт",
+			input: []string{"Строка для проверки 1", "Строка для проверки 2", "Строка для проверки 3"},
+			want:  []byte("Строка для проверки 1\nСтрока для проверки 2\nСтрока для проверки 3"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := strings.NewReader(tt.input)
-			result := ReadStringAsBytes(r)
-			assert.Equal(t, tt.want, result)
 
+			var in string
+			for i, s := range tt.input {
+				in = in + s
+				if i < len(tt.input)-1 {
+					in = in + "\n"
+				}
+			}
+
+			result := ReadStringAsBytes(strings.NewReader(in))
+			assert.Equal(t, tt.want, result)
 		})
 	}
 }
@@ -65,7 +96,12 @@ func TestReadBytes(t *testing.T) {
 		want  []byte
 	}{
 		{
-			name:  "Успешное чтение строк как последовательности байт",
+			name:  "Считывание пустой последовательности байт",
+			input: []byte{},
+			want:  []byte{},
+		},
+		{
+			name:  "Считывание непустой последовательности байт",
 			input: []byte("Последовательность байт"),
 			want:  []byte("Последовательность байт"),
 		},
@@ -73,11 +109,11 @@ func TestReadBytes(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := bytes.NewReader(tt.input)
-			result, err := ReadBytes(r)
+			result, err := ReadBytes(bytes.NewReader(tt.input))
 			if err != nil {
 				t.Error(err)
 			}
+
 			assert.Equal(t, tt.want, result)
 		})
 	}
@@ -90,15 +126,24 @@ func TestWriteStrings(t *testing.T) {
 		want  string
 	}{
 		{
-			name:  "Успешная запись строк",
-			input: []string{"Строка для проверки 1", "Строка для проверки 2"},
-			want:  "Строка для проверки 1Строка для проверки 2",
+			name:  "Запись пустого набора строк",
+			input: []string{},
+			want:  "",
+		},
+		{
+			name:  "Запись одной строки",
+			input: []string{"Строка для проверки"},
+			want:  "Строка для проверки",
+		},
+		{
+			name:  "Запись нескольких строк",
+			input: []string{"Строка для проверки 1", "Строка для проверки 2", "Строка для проверки 3"},
+			want:  "Строка для проверки 1Строка для проверки 2Строка для проверки 3",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			b := new(bytes.Buffer)
 
 			err := WriteStrings(tt.input, b)
@@ -123,7 +168,12 @@ func TestWriteBytes(t *testing.T) {
 		want  []byte
 	}{
 		{
-			name:  "Успешная запись последовательности байт",
+			name:  "Запись пустой последовательности байт",
+			input: []byte{},
+			want:  []byte{},
+		},
+		{
+			name:  "Запись непустой последовательности байт",
 			input: []byte("Последовательность байт"),
 			want:  []byte("Последовательность байт"),
 		},
