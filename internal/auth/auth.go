@@ -10,14 +10,13 @@ import (
 	"strings"
 )
 
-const secretKey = "TheSecretKey"
+const secretKey = "TheSecretKey" // Ключ шифрования для создания подписи токена авторизованного пользователя.
 
+// user хранит данные об авторизованном пользователе.
 type user struct {
-	login         string
-	passwordHash  string
-	maxRecordId   int
-	tokens        []string
-	encryptionKey string
+	login        string // Имя авторизованного пользователя.
+	passwordHash string // Хэш пароля авторизованного пользователя.
+	tokens       []string
 }
 
 // UserAdderGetter предоставляет функции добавления нового пользователя и получения данных о существующем пользователе.
@@ -125,11 +124,9 @@ func (a *authentication) Register(ctx context.Context, login, password string) (
 	}
 
 	u := &user{
-		login:         login,
-		passwordHash:  passwordHash,
-		maxRecordId:   0,
-		tokens:        make([]string, 0),
-		encryptionKey: "",
+		login:        login,
+		passwordHash: passwordHash,
+		tokens:       make([]string, 0),
 	}
 	a.users[loginHash] = u
 
@@ -183,11 +180,9 @@ func (a *authentication) Login(ctx context.Context, login, password string) (str
 
 	if _, ok := a.users[loginHash]; !ok {
 		u := &user{
-			login:         login,
-			passwordHash:  passwordHash,
-			maxRecordId:   0,
-			tokens:        make([]string, 0),
-			encryptionKey: "",
+			login:        login,
+			passwordHash: passwordHash,
+			tokens:       make([]string, 0),
 		}
 		a.users[loginHash] = u
 	}
@@ -234,19 +229,19 @@ func (a *authentication) Logout(ctx context.Context, t string) error {
 		return err
 	}
 
-	user, ok := a.users[loginHash]
+	u, ok := a.users[loginHash]
 	if !ok {
 		return errors.New("пользователь " + login + " не авторизован")
 	}
 
-	for i, value := range user.tokens {
+	for i, value := range u.tokens {
 		if value == t {
 			if i == 0 {
-				user.tokens = user.tokens[1:]
-			} else if i == len(user.tokens)-1 {
-				user.tokens = user.tokens[:i]
+				u.tokens = u.tokens[1:]
+			} else if i == len(u.tokens)-1 {
+				u.tokens = u.tokens[:i]
 			} else {
-				user.tokens = append(user.tokens[:i], user.tokens[i+1:]...)
+				u.tokens = append(u.tokens[:i], u.tokens[i+1:]...)
 			}
 
 			break

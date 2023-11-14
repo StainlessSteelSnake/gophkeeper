@@ -1,3 +1,5 @@
+// Пакет inout предоставляет функции для считывания и записи текстовых и бинарных данных
+// из консоли, либо из внешнего источника (файла).
 package inout
 
 import (
@@ -6,6 +8,7 @@ import (
 	"os"
 )
 
+// ReadStrings считывает текстовые данные из стандартного источника ввода (консоль или файл).
 func ReadStrings() []string {
 	var result = make([]string, 0)
 
@@ -18,6 +21,8 @@ func ReadStrings() []string {
 	return result
 }
 
+// ReadStringAsBytes считывает текстовые данные в виде последовательности байт
+// из стандартного источника ввода (консоль или файл).
 func ReadStringAsBytes() []byte {
 	var result = make([]byte, 0)
 	strings := ReadStrings()
@@ -33,6 +38,8 @@ func ReadStringAsBytes() []byte {
 	return result
 }
 
+// ReadBytes считывает бинарные данные в виде последовательности байт
+// из стандартного источника ввода (консоль или файл).
 func ReadBytes() ([]byte, error) {
 	buf := bufio.NewReader(os.Stdin)
 	var result []byte

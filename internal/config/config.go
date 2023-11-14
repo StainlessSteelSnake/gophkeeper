@@ -7,11 +7,13 @@ const (
 	defaultServerAddress = "localhost:3200"
 )
 
+// Configuration хранит настройки сервера приложения.
 type Configuration struct {
-	ServerAddress string `env:"RUN_ADDRESS"`
-	DatabaseURI   string `env:"DATABASE_URI"`
+	ServerAddress string `env:"RUN_ADDRESS"`  // IP-адрес и порт работы gRPC-сервера приложения.
+	DatabaseURI   string `env:"DATABASE_URI"` // Строка для подключения к базе данных приложения.
 }
 
+// NewConfiguration устанавливает настройки приложения.
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{}
 

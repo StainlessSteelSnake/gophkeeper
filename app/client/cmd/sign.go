@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ var signUpCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Println(registerResponse)
+		//log.Println(registerResponse)
 
 		err = config.SetToken(registerResponse.Token.Token)
 		if err != nil {
@@ -53,6 +54,8 @@ var signUpCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
+
+		fmt.Printf("Пользователь %s успешно зарегистрирован.", userLogin)
 	},
 }
 
@@ -89,6 +92,8 @@ var signInCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
+
+		fmt.Printf("Пользователь %s успешно авторизован.", userLogin)
 	},
 }
 

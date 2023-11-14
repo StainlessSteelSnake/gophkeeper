@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// WriteStrings записывает текстовые данные в стандартный источник вывода (консоль или файл).
 func WriteStrings(s []string) error {
 	buf := bufio.NewWriter(os.Stdout)
 
@@ -19,6 +20,7 @@ func WriteStrings(s []string) error {
 	return nil
 }
 
+// WriteStrings записывает бинарные данные в стандартный источник вывода (консоль или файл).
 func WriteBytes(b []byte) {
 	buf := bufio.NewWriter(os.Stdout)
 
