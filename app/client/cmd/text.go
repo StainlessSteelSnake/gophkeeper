@@ -31,16 +31,19 @@ var textAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordName == "" {
-			log.Fatalln(errors.New("не указано название сохраняемой записи"))
+			log.Println(errors.New("не указано название сохраняемой записи"))
+			return
 		}
 
 		text := inout.ReadStringAsBytes(os.Stdin)
 		if len(text) == 0 {
-			log.Fatalln(errors.New("не передан текст для сохранения"))
+			log.Println(errors.New("не передан текст для сохранения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -48,12 +51,14 @@ var textAddCmd = &cobra.Command{
 
 		err := encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedText, err := encryptor.Encode(text)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		addTextRequest := srs.AddTextRequest{
@@ -69,7 +74,8 @@ var textAddCmd = &cobra.Command{
 
 		addTextResponse, err := client.AddText(context.Background(), &addTextRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Запись сохранена с ID", addTextResponse.Id)
@@ -85,16 +91,19 @@ var textShowCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
+			log.Println(errors.New("не указан ID запрашиваемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -102,7 +111,8 @@ var textShowCmd = &cobra.Command{
 
 		err = decryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		getTextRequest := srs.GetTextRequest{
@@ -114,12 +124,14 @@ var textShowCmd = &cobra.Command{
 
 		getTextResponse, err := client.GetText(context.Background(), &getTextRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedText, err := decryptor.Decode(getTextResponse.EncryptedText)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Полученный текст приведён ниже")
@@ -137,21 +149,25 @@ var textChangeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+			log.Println(errors.New("не указан ID изменяемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		text := inout.ReadStringAsBytes(os.Stdin)
 		if len(text) == 0 {
-			log.Fatalln(errors.New("не передан текст для изменения"))
+			log.Println(errors.New("не передан текст для изменения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -159,12 +175,14 @@ var textChangeCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedText, err := encryptor.Encode(text)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		changeTextRequest := srs.ChangeTextRequest{
@@ -177,7 +195,8 @@ var textChangeCmd = &cobra.Command{
 
 		_, err = client.ChangeText(context.Background(), &changeTextRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID %d изменена.\n", id)

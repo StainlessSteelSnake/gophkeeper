@@ -35,46 +35,56 @@ var cardAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordName == "" {
-			log.Fatalln(errors.New("не указано название сохраняемой записи"))
+			log.Println(errors.New("не указано название сохраняемой записи"))
+			return
 		}
 
 		if storedCardNumber == "" {
-			log.Fatalln(errors.New("не указан номер банковской карты для сохранения"))
+			log.Println(errors.New("не указан номер банковской карты для сохранения"))
+			return
 		}
 
 		if storedCardHolder == "" {
-			log.Fatalln(errors.New("не указан держатель банковской карты для сохранения"))
+			log.Println(errors.New("не указан держатель банковской карты для сохранения"))
+			return
 		}
 
 		if storedCardExpiryYear == "" {
-			log.Fatalln(errors.New("не указан год срока действия банковской карты для сохранения"))
+			log.Println(errors.New("не указан год срока действия банковской карты для сохранения"))
+			return
 		}
 
 		_, err := checkYear(storedCardExpiryYear)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		if storedCardExpiryMonth == "" {
-			log.Fatalln(errors.New("не указан месяц срока действия банковской карты для сохранения"))
+			log.Println(errors.New("не указан месяц срока действия банковской карты для сохранения"))
+			return
 		}
 
 		_, err = checkMonth(storedCardExpiryMonth)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		if storedCardCvc == "" {
-			log.Fatalln(errors.New("не указан код CVC банковской карты для сохранения"))
+			log.Println(errors.New("не указан код CVC банковской карты для сохранения"))
+			return
 		}
 
 		_, err = checkCvc(storedCardCvc)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		for i, arg := range args {
@@ -87,32 +97,38 @@ var cardAddCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedCardNumber, err := encryptor.Encode([]byte(storedCardNumber))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedCardHolder, err := encryptor.Encode([]byte(storedCardHolder))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedCardExpiryYear, err := encryptor.Encode([]byte(storedCardExpiryYear))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedCardExpiryMonth, err := encryptor.Encode([]byte(storedCardExpiryMonth))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedCardCvc, err := encryptor.Encode([]byte(storedCardCvc))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		addBankCardRequest := srs.AddBankCardRequest{
@@ -134,7 +150,8 @@ var cardAddCmd = &cobra.Command{
 
 		addBankCardResponse, err := client.AddBankCard(context.Background(), &addBankCardRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Запись сохранена с ID", addBankCardResponse.Id)
@@ -150,16 +167,19 @@ var cardShowCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
+			log.Println(errors.New("не указан ID запрашиваемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -168,7 +188,8 @@ var cardShowCmd = &cobra.Command{
 
 		err = decryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		getBankCardRequest := srs.GetBankCardRequest{
@@ -180,32 +201,38 @@ var cardShowCmd = &cobra.Command{
 
 		getBankCardResponse, err := client.GetBankCard(context.Background(), &getBankCardRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedCardNumber, err := decryptor.Decode(getBankCardResponse.EncryptedBankCard.CardNumber)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedCardHolder, err := decryptor.Decode(getBankCardResponse.EncryptedBankCard.CardHolder)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedCardExpiryYear, err := decryptor.Decode(getBankCardResponse.EncryptedBankCard.ExpiryYear)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedCardExpiryMonth, err := decryptor.Decode(getBankCardResponse.EncryptedBankCard.ExpiryMonth)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedCardCvc, err := decryptor.Decode(getBankCardResponse.EncryptedBankCard.Cvc)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Номер карты:", string(decryptedCardNumber))
@@ -224,16 +251,19 @@ var cardChangeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+			log.Println(errors.New("не указан ID изменяемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		if storedCardNumber == "" &&
@@ -241,7 +271,8 @@ var cardChangeCmd = &cobra.Command{
 			storedCardExpiryYear == "" &&
 			storedCardExpiryMonth == "" &&
 			storedCardCvc == "" {
-			log.Fatalln(errors.New("не указаны данные банковской карты для изменения"))
+			log.Println(errors.New("не указаны данные банковской карты для изменения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -249,7 +280,8 @@ var cardChangeCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		var encryptedCardNumber, encryptedCardHolder, encryptedCardExpiryYear, encryptedCardExpiryMonth, encryptedCardCvc []byte
@@ -257,50 +289,58 @@ var cardChangeCmd = &cobra.Command{
 		if storedCardNumber != "" {
 			encryptedCardNumber, err = encryptor.Encode([]byte(storedCardNumber))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
 		if storedCardHolder != "" {
 			encryptedCardHolder, err = encryptor.Encode([]byte(storedCardHolder))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
 		if storedCardExpiryYear != "" {
 			_, err = checkYear(storedCardExpiryYear)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 
 			encryptedCardExpiryYear, err = encryptor.Encode([]byte(storedCardExpiryYear))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
 		if storedCardExpiryMonth != "" {
 			_, err = checkMonth(storedCardExpiryMonth)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 
 			encryptedCardExpiryMonth, err = encryptor.Encode([]byte(storedCardExpiryMonth))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
 		if storedCardCvc != "" {
 			_, err = checkCvc(storedCardCvc)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 
 			encryptedCardCvc, err = encryptor.Encode([]byte(storedCardCvc))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
@@ -320,7 +360,8 @@ var cardChangeCmd = &cobra.Command{
 
 		_, err = client.ChangeBankCard(context.Background(), &changeBankCardRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID %d изменена.\n", id)

@@ -76,28 +76,31 @@ func NewStorage(ctx context.Context, databaseUri string) Storager {
 	var err error
 	storage := &Storage{}
 
-	storage.conn, err = pgx.Connect(ctx, databaseUri)
-	if err != nil {
-		log.Fatal(err)
-		return storage
-	}
-
 	dbCfg := strings.Split(databaseUri, ":")
 	if len(dbCfg) < 2 {
-		log.Fatal(errors.New("в URI базы данных отсутствует информация о пользователе"))
-		return storage
+		log.Println(errors.New("в URI базы данных отсутствует информация о пользователе"))
+		return nil
 	}
 
 	storage.user = strings.TrimPrefix(dbCfg[1], "//")
 	if storage.user == "" {
-		log.Fatalln(errors.New("в URI базы данных отсутствует информация о пользователе"))
-		return storage
+		log.Println(errors.New("в URI базы данных отсутствует информация о пользователе"))
+		return nil
 	}
 	log.Println("Пользователь БД:", storage.user)
 
+	storage.conn, err = pgx.Connect(ctx, databaseUri)
+	if err != nil {
+		log.Println(err)
+		storage.Close(ctx)
+		return nil
+	}
+
 	err = storage.init(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		storage.Close(ctx)
+		return nil
 	}
 
 	return storage

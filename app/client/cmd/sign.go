@@ -25,34 +25,36 @@ var signUpCmd = &cobra.Command{
 	Long:  `Register to GophKeeper server with user name and password.`,
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		//fmt.Println("User:", cmd.Flag("user").Value, ", Password:", cmd.Flag("password").Value, ".")
 
 		registerRequest := srs.RegisterRequest{
 			LoginPassword: &srs.LoginPassword{
-				Login:    userLogin,    // cmd.Flag("user").Value.String(),
-				Password: userPassword, // cmd.Flag("password").Value.String(),
+				Login:    userLogin,
+				Password: userPassword,
 			},
 		}
 
 		registerResponse, err := client.Register(context.Background(), &registerRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
-		//log.Println(registerResponse)
 
 		err = config.SetToken(registerResponse.Token.Token)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		keyphrase, err := coder.NewCoder().SetKeyPhrase(userPassword)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		err = config.SetKeyPhrase(keyphrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Пользователь %s успешно зарегистрирован.", userLogin)
@@ -74,23 +76,26 @@ var signInCmd = &cobra.Command{
 
 		loginResponse, err := client.Login(context.Background(), &loginRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
-		//log.Println(loginResponse)
 
 		err = config.SetToken(loginResponse.Token.Token)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		keyphrase, err := coder.NewCoder().SetKeyPhrase(userPassword)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		err = config.SetKeyPhrase(keyphrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Пользователь %s успешно авторизован.", userLogin)
@@ -105,12 +110,14 @@ var signOut = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := config.SetToken("")
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		err = config.SetKeyPhrase("")
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 	},
 }

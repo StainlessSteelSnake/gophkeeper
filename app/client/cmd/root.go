@@ -11,11 +11,11 @@ import (
 	"github.com/StainlessSteelSnake/gophkeeper/internal/services"
 )
 
-var ServerAddress string                                                             // IP-адрес и порт для подключения к серверу приложения.
-var config conf.Configurator                                                         // Контроллер параметров приложения.
-var clientInit func(cfg conf.Configurator) (services.GophKeeperClient, func() error) // Инициализатор подключения к серверу приложения.
-var clientClose func() error                                                         // Функция отключения от сервера приложения.
-var client services.GophKeeperClient                                                 // gRPC-клиент для передачи данных на сервер приложения.
+var ServerAddress string                                                                    // IP-адрес и порт для подключения к серверу приложения.
+var config conf.Configurator                                                                // Контроллер параметров приложения.
+var clientInit func(cfg conf.Configurator) (services.GophKeeperClient, func() error, error) // Инициализатор подключения к серверу приложения.
+var clientClose func() error                                                                // Функция отключения от сервера приложения.
+var client services.GophKeeperClient                                                        // gRPC-клиент для передачи данных на сервер приложения.
 
 // rootCmd описывает набор команд клиентского приложения.
 var rootCmd = &cobra.Command{
@@ -29,7 +29,12 @@ var rootCmd = &cobra.Command{
 		if cmd.Flag("address").Changed {
 			config.SetServerAddress(cmd.Flag("address").Value.String())
 		}
-		client, clientClose = clientInit(config)
+		var err error
+		client, clientClose, err = clientInit(config)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
 	},
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
 		clientClose()
@@ -66,7 +71,7 @@ func init() {
 }
 
 // Execute запускает обработку команд пользователя.
-func Execute(initFunc func(cfg conf.Configurator) (services.GophKeeperClient, func() error), cfg conf.Configurator) {
+func Execute(initFunc func(cfg conf.Configurator) (services.GophKeeperClient, func() error, error), cfg conf.Configurator) {
 	if initFunc == nil || cfg == nil {
 		os.Exit(1)
 	}

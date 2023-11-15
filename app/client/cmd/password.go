@@ -32,19 +32,23 @@ var passwordAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordName == "" {
-			log.Fatalln(errors.New("не указано название сохраняемой записи"))
+			log.Println(errors.New("не указано название сохраняемой записи"))
+			return
 		}
 
 		if storedLogin == "" {
-			log.Fatalln(errors.New("не указан логин для сохранения"))
+			log.Println(errors.New("не указан логин для сохранения"))
+			return
 		}
 
 		if storedPassword == "" {
-			log.Fatalln(errors.New("не указан пароль для сохранения"))
+			log.Println(errors.New("не указан пароль для сохранения"))
+			return
 		}
 
 		for i, arg := range args {
@@ -57,17 +61,20 @@ var passwordAddCmd = &cobra.Command{
 
 		err := encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedLogin, err := encryptor.Encode([]byte(storedLogin))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedPassword, err := encryptor.Encode([]byte(storedPassword))
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		addLoginPasswordRequest := srs.AddLoginPasswordRequest{
@@ -86,7 +93,8 @@ var passwordAddCmd = &cobra.Command{
 
 		addLoginPasswordResponse, err := client.AddLoginPassword(context.Background(), &addLoginPasswordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Запись сохранена с ID", addLoginPasswordResponse.Id)
@@ -102,16 +110,19 @@ var passwordShowCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
+			log.Println(errors.New("не указан ID запрашиваемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -120,7 +131,8 @@ var passwordShowCmd = &cobra.Command{
 
 		err = decryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		getLoginPasswordRequest := srs.GetLoginPasswordRequest{
@@ -132,17 +144,20 @@ var passwordShowCmd = &cobra.Command{
 
 		getLoginPasswordResponse, err := client.GetLoginPassword(context.Background(), &getLoginPasswordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedLogin, err := decryptor.Decode(getLoginPasswordResponse.EncryptedLoginPassword.EncryptedLogin)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedPassword, err := decryptor.Decode(getLoginPasswordResponse.EncryptedLoginPassword.EncryptedPassword)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Полученный логин:", string(decryptedLogin))
@@ -159,20 +174,24 @@ var passwordChangeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+			log.Println(errors.New("не указан ID изменяемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		if storedLogin == "" && storedPassword == "" {
-			log.Fatalln(errors.New("не указаны логин и пароль для изменения"))
+			log.Println(errors.New("не указаны логин и пароль для изменения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -180,7 +199,8 @@ var passwordChangeCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		var encryptedLogin, encryptedPassword []byte
@@ -188,14 +208,16 @@ var passwordChangeCmd = &cobra.Command{
 		if storedLogin != "" {
 			encryptedLogin, err = encryptor.Encode([]byte(storedLogin))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
 		if storedPassword != "" {
 			encryptedPassword, err = encryptor.Encode([]byte(storedPassword))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 		}
 
@@ -212,7 +234,8 @@ var passwordChangeCmd = &cobra.Command{
 
 		_, err = client.ChangeLoginPassword(context.Background(), &changeLoginPasswordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID %d изменена.\n", id)

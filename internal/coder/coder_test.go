@@ -98,7 +98,7 @@ func Test_coder_Encode(t *testing.T) {
 			args: args{
 				source: []byte("Зашифрованная фраза"),
 			},
-			want:    "4759bc1794eb351f494f5b5e31845d1971a8ba10eb63fdefb56e691cc1f3861640ffb8d9822a47696145ca4f4495a7f9941f31944f1802a3161644eb14e64b0fd0c859ef3c53d7c8f64d007d8ae196a4cf",
+			want:    "1234",
 			wantErr: false,
 		},
 	}
@@ -111,7 +111,9 @@ func Test_coder_Encode(t *testing.T) {
 				aescgm:   tt.fields.aescgm,
 				nonce:    tt.fields.nonce,
 			}
+
 			err := c.init()
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Encode() error = %v, wantErr %v", err, tt.wantErr)
 				return

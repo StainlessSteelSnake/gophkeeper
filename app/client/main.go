@@ -29,20 +29,21 @@ func main() {
 
 	err = cfg.SetVersion(Version, BuildTime)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 
 	cmd.Execute(grpcInit, cfg)
 }
 
 // grpcInit создаёт gRPC-клиент и устанавливает соединение с сервером приложения.
-func grpcInit(cfg config.Configurator) (srs.GophKeeperClient, func() error) {
+func grpcInit(cfg config.Configurator) (srs.GophKeeperClient, func() error, error) {
 	// установка соединения с gRPC-сервером
 	conn, err := grpc.Dial(cfg.GetServerAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, nil, err
 	}
 
 	// получение gRPC-интерфейса для установленного соединения
-	return srs.NewGophKeeperClient(conn), conn.Close
+	return srs.NewGophKeeperClient(conn), conn.Close, nil
 }

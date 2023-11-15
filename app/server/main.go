@@ -15,6 +15,10 @@ func main() {
 	cfg := config.NewConfiguration()
 
 	dbStorage := storage.NewStorage(ctx, cfg.DatabaseURI)
+	if dbStorage == nil {
+		return
+	}
+
 	defer dbStorage.Close(ctx)
 
 	authenticator, err := auth.NewAuthentication(dbStorage)

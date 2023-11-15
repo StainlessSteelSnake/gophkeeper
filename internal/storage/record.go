@@ -147,6 +147,11 @@ func (s *Storage) GetRecords(ctx context.Context, userLogin string) ([]Record, e
 	}
 
 	for rows.Next() {
+		if err := rows.Err(); err != nil {
+			log.Printf("БД. Ошибка при попытке получения списка записей пользователя '%s', сообщение: '%s'.\n", userLogin, err)
+			return nil, err
+		}
+
 		record := Record{
 			UserLogin: userLogin,
 		}

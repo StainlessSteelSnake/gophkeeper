@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"strings"
+	"sync"
 )
 
 const secretKey = "TheSecretKey" // Ключ шифрования для создания подписи токена авторизованного пользователя.
@@ -27,8 +28,8 @@ type UserAdderGetter interface {
 
 // authentication хранит список текущих авторизованных пользователей и ссылку на хранилище пользователей
 type authentication struct {
-	users          map[string]*user // Список авторизованных за время работы сервиса пользователей.
-	userController UserAdderGetter  // Ссылка на контроллер хранилища для получения и добавления пользователей.
+	users          sync.Map        //         map[string]*user // Список авторизованных за время работы сервиса пользователей.
+	userController UserAdderGetter // Ссылка на контроллер хранилища для получения и добавления пользователей.
 }
 
 // Authenticator позволяет зарегистрировать новых пользователей, авторизовать существующих пользователей
@@ -46,7 +47,7 @@ func NewAuthentication(userController UserAdderGetter) (Authenticator, error) {
 		return nil, errors.New("не задан контроллер хранилища данных")
 	}
 
-	a := authentication{userController: userController, users: make(map[string]*user)}
+	a := authentication{userController: userController}
 	return &a, nil
 }
 
@@ -102,7 +103,12 @@ func (a *authentication) createToken(loginHash string) (string, error) {
 
 	token = token + tokenSign
 
-	a.users[loginHash].tokens = append(a.users[loginHash].tokens, token)
+	u, ok := a.users.Load(loginHash)
+	if !ok {
+		return "", errors.New("пользователь не найден")
+	}
+
+	u.(*user).tokens = append(u.(*user).tokens, token)
 	return token, nil
 }
 
@@ -128,7 +134,8 @@ func (a *authentication) Register(ctx context.Context, login, password string) (
 		passwordHash: passwordHash,
 		tokens:       make([]string, 0),
 	}
-	a.users[loginHash] = u
+
+	a.users.Store(loginHash, u)
 
 	token, err := a.createToken(loginHash)
 	if err != nil {
@@ -147,12 +154,12 @@ func (a *authentication) checkPassword(ctx context.Context, login, password stri
 	}
 
 	savedPasswordHash := ""
-	userData, userFound := a.users[loginHash]
-	if userFound {
-		savedPasswordHash = userData.passwordHash
+	u, ok := a.users.Load(loginHash)
+	if ok {
+		savedPasswordHash = u.(*user).passwordHash
 	}
 
-	if !userFound {
+	if !ok {
 		savedPasswordHash, _, err = a.userController.GetUser(ctx, login)
 	}
 	if err != nil {
@@ -178,13 +185,13 @@ func (a *authentication) Login(ctx context.Context, login, password string) (str
 		return "", err
 	}
 
-	if _, ok := a.users[loginHash]; !ok {
+	if _, ok := a.users.Load(loginHash); !ok {
 		u := &user{
 			login:        login,
 			passwordHash: passwordHash,
 			tokens:       make([]string, 0),
 		}
-		a.users[loginHash] = u
+		a.users.Store(loginHash, u)
 	}
 
 	token, err := a.createToken(loginHash)
@@ -203,13 +210,13 @@ func (a *authentication) Authenticate(ctx context.Context, t string) (string, st
 	}
 
 	loginHash := tokenParts[0]
-	userData, userFound := a.users[loginHash]
-	if !userFound {
+	u, ok := a.users.Load(loginHash)
+	if !ok {
 		return "", "", errors.New("указанный пользователь не авторизован")
 	}
 
 	var tokenIsValid bool
-	for _, v := range userData.tokens {
+	for _, v := range u.(*user).tokens {
 		if v == t {
 			tokenIsValid = true
 			break
@@ -220,7 +227,7 @@ func (a *authentication) Authenticate(ctx context.Context, t string) (string, st
 		return "", "", errors.New("подпись токена авторизации пользователя не соответствует сохранённой")
 	}
 
-	return userData.login, loginHash, nil
+	return u.(*user).login, loginHash, nil
 }
 
 func (a *authentication) Logout(ctx context.Context, t string) error {
@@ -229,19 +236,19 @@ func (a *authentication) Logout(ctx context.Context, t string) error {
 		return err
 	}
 
-	u, ok := a.users[loginHash]
+	u, ok := a.users.Load(loginHash)
 	if !ok {
 		return errors.New("пользователь " + login + " не авторизован")
 	}
 
-	for i, value := range u.tokens {
+	for i, value := range u.(*user).tokens {
 		if value == t {
 			if i == 0 {
-				u.tokens = u.tokens[1:]
-			} else if i == len(u.tokens)-1 {
-				u.tokens = u.tokens[:i]
+				u.(*user).tokens = u.(*user).tokens[1:]
+			} else if i == len(u.(*user).tokens)-1 {
+				u.(*user).tokens = u.(*user).tokens[:i]
 			} else {
-				u.tokens = append(u.tokens[:i], u.tokens[i+1:]...)
+				u.(*user).tokens = append(u.(*user).tokens[:i], u.(*user).tokens[i+1:]...)
 			}
 
 			break

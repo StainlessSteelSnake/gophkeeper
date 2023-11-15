@@ -31,20 +31,24 @@ var binaryAddCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordName == "" {
-			log.Fatalln(errors.New("не указано название сохраняемой записи"))
+			log.Println(errors.New("не указано название сохраняемой записи"))
+			return
 		}
 
 		binary, err := inout.ReadBytes(os.Stdin)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		if len(binary) == 0 {
-			log.Fatalln(errors.New("не переданы бинарные данные для сохранения"))
+			log.Println(errors.New("не переданы бинарные данные для сохранения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -52,12 +56,14 @@ var binaryAddCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedBytes, err := encryptor.Encode(binary)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		addBytesRequest := srs.AddBytesRequest{
@@ -73,7 +79,8 @@ var binaryAddCmd = &cobra.Command{
 
 		addBytesResponse, err := client.AddBytes(context.Background(), &addBytesRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("Запись сохранена с ID", addBytesResponse.Id)
@@ -89,16 +96,19 @@ var binaryShowCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
+			log.Println(errors.New("не указан ID запрашиваемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -106,7 +116,8 @@ var binaryShowCmd = &cobra.Command{
 
 		err = decryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		getBytesRequest := srs.GetBytesRequest{
@@ -118,12 +129,14 @@ var binaryShowCmd = &cobra.Command{
 
 		getBytesResponse, err := client.GetBytes(context.Background(), &getBytesRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		decryptedBytes, err := decryptor.Decode(getBytesResponse.EncryptedBytes)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		inout.WriteBytes(decryptedBytes, os.Stdout)
@@ -139,24 +152,29 @@ var binaryChangeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+			log.Println(errors.New("не указан ID изменяемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		binary, err := inout.ReadBytes(os.Stdin)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 		if len(binary) == 0 {
-			log.Fatalln(errors.New("не переданы бинарные данные для изменения"))
+			log.Println(errors.New("не переданы бинарные данные для изменения"))
+			return
 		}
 
 		keyPhrase := config.GetKeyPhrase()
@@ -164,12 +182,14 @@ var binaryChangeCmd = &cobra.Command{
 
 		err = encryptor.SetKeyHex(keyPhrase)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		encryptedBytes, err := encryptor.Encode(binary)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		changeBytesRequest := srs.ChangeBytesRequest{
@@ -182,7 +202,8 @@ var binaryChangeCmd = &cobra.Command{
 
 		_, err = client.ChangeBytes(context.Background(), &changeBytesRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID %d изменена.\n", id)

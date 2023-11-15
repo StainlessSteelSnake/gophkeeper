@@ -36,7 +36,8 @@ var recordListCmd = &cobra.Command{
 
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		getUserRecordsRequest := srs.GetUserRecordsRequest{
@@ -47,7 +48,8 @@ var recordListCmd = &cobra.Command{
 
 		getUserRecordsResponse, err := client.GetUserRecords(context.Background(), &getUserRecordsRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		if len(getUserRecordsResponse.UserRecords) == 0 {
@@ -72,16 +74,19 @@ var recordShowCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID запрашиваемой записи"))
+			log.Println(errors.New("не указан ID запрашиваемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		getUserRecordRequest := srs.GetUserRecordRequest{
@@ -93,7 +98,8 @@ var recordShowCmd = &cobra.Command{
 
 		getUserRecordResponse, err := client.GetUserRecord(context.Background(), &getUserRecordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Println("ID:", getUserRecordResponse.UserRecord.Id)
@@ -112,20 +118,24 @@ var recordChangeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID изменяемой записи"))
+			log.Println(errors.New("не указан ID изменяемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID запрашиваемой записи:", err)
+			log.Println("неправильно указан ID запрашиваемой записи:", err)
+			return
 		}
 
 		if recordName == "" && recordMetadata == "" {
-			log.Fatalln(errors.New("не указаны данные для изменения записи"))
+			log.Println(errors.New("не указаны данные для изменения записи"))
+			return
 		}
 
 		changeUserRecordRequest := srs.ChangeUserRecordRequest{
@@ -141,7 +151,8 @@ var recordChangeCmd = &cobra.Command{
 
 		_, err = client.ChangeUserRecord(context.Background(), &changeUserRecordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID '%d' успешно изменена.\n", id)
@@ -157,16 +168,19 @@ var recordDeleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		token := config.GetToken()
 		if token == "" {
-			log.Fatalln(errors.New("данные авторизации (токен) не найдены"))
+			log.Println(errors.New("данные авторизации (токен) не найдены"))
+			return
 		}
 
 		if recordId == "" {
-			log.Fatalln(errors.New("не указан ID удаляемой записи"))
+			log.Println(errors.New("не указан ID удаляемой записи"))
+			return
 		}
 
 		id, err := strconv.Atoi(recordId)
 		if err != nil {
-			log.Fatalln("неправильно указан ID удаляемой записи:", err)
+			log.Println("неправильно указан ID удаляемой записи:", err)
+			return
 		}
 
 		getUserRecordRequest := srs.GetUserRecordRequest{
@@ -178,7 +192,8 @@ var recordDeleteCmd = &cobra.Command{
 
 		getUserRecordResponse, err := client.GetUserRecord(context.Background(), &getUserRecordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf(
@@ -192,7 +207,8 @@ var recordDeleteCmd = &cobra.Command{
 			var answer string
 			_, err := fmt.Scan(&answer)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				return
 			}
 
 			switch answer {
@@ -214,7 +230,8 @@ var recordDeleteCmd = &cobra.Command{
 
 		_, err = client.DeleteUserRecord(context.Background(), &deleteUserRecordRequest)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			return
 		}
 
 		fmt.Printf("Запись с ID '%d' успешно удалена.\n", id)
