@@ -19,3 +19,13 @@
 
 # Go workspace file
 go.work
+/vendor/
+.DS_Store
+app/.DS_Store
+app/client/.DS_Store
+/.idea/
+*.DS_Store
+gophkeeper.yaml
+/app/client/test.txt
+/profile.txt
+/app/client/test.jpg

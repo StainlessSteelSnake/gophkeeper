@@ -1,0 +1,235 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "github.com/StainlessSteelSnake/gophkeeper/internal/services";
+
+message LoginPassword {
+  string login = 1;
+  string password = 2;
+}
+
+message Token {
+  string token = 1;
+}
+
+message EncryptedLoginPassword {
+  bytes encrypted_login = 1;
+  bytes encrypted_password = 2;
+}
+
+message UserRecord {
+  int32 id = 1;
+  string user_login = 2;
+  string record_type = 3;
+  string name = 4;
+  string metadata = 5;
+}
+
+message EncryptedBankCard {
+  bytes card_number = 1;
+  bytes card_holder = 2;
+  bytes expiry_year = 3;
+  bytes expiry_month = 4;
+  bytes cvc = 5;
+}
+
+message RegisterRequest {
+  LoginPassword login_password = 1;
+}
+
+message RegisterResponse {
+  Token token = 1;
+}
+
+message LoginRequest {
+  LoginPassword login_password = 1;
+}
+
+message LoginResponse {
+  Token token = 1;
+}
+
+message LogoutRequest {
+  Token token = 1;
+}
+
+message LogoutResponse {
+}
+
+message GetUserRecordsRequest {
+  Token token = 1;
+}
+
+message GetUserRecordsResponse {
+  repeated UserRecord user_records = 1;
+}
+
+message GetUserRecordRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetUserRecordResponse {
+  UserRecord user_record = 1;
+}
+
+message RecordNameMetadata {
+  string name = 1;
+  string metadata = 2;
+}
+
+message AddLoginPasswordRequest{
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  EncryptedLoginPassword encrypted_login_password = 3;
+}
+
+message AddLoginPasswordResponse{
+  int32 id = 1;
+}
+
+message GetLoginPasswordRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetLoginPasswordResponse{
+    EncryptedLoginPassword encrypted_login_password = 1;
+}
+
+message ChangeLoginPasswordRequest{
+  Token token = 1;
+  int32 id = 2;
+  EncryptedLoginPassword encrypted_login_password = 3;
+}
+
+message ChangeLoginPasswordResponse{
+}
+
+message AddBankCardRequest{
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  EncryptedBankCard encrypted_bank_card = 3;
+}
+
+message AddBankCardResponse{
+  int32 id = 1;
+}
+
+message GetBankCardRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetBankCardResponse{
+  EncryptedBankCard encrypted_bank_card = 1;
+}
+
+message ChangeBankCardRequest{
+  Token token = 1;
+  int32 id = 2;
+  EncryptedBankCard encrypted_bank_card = 3;
+}
+
+message ChangeBankCardResponse{
+}
+
+message AddTextRequest {
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  bytes encrypted_text = 3;
+}
+
+message AddTextResponse {
+  int32 id = 1;
+}
+
+message GetTextRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetTextResponse {
+  bytes encrypted_text = 1;
+}
+
+message ChangeTextRequest {
+  Token token = 1;
+  int32 id = 2;
+  bytes encrypted_text = 3;
+}
+
+message ChangeTextResponse {
+}
+
+message AddBytesRequest {
+  Token token = 1;
+  RecordNameMetadata name_metadata = 2;
+  bytes encrypted_bytes = 3;
+}
+
+message AddBytesResponse {
+  int32 id = 1;
+}
+
+message GetBytesRequest {
+  Token token = 1;
+  int32 id = 2;
+}
+
+message GetBytesResponse {
+  bytes encrypted_bytes = 1;
+}
+
+message ChangeBytesRequest {
+  Token token = 1;
+  int32 id = 2;
+  bytes encrypted_bytes = 3;
+}
+
+message ChangeBytesResponse {
+}
+
+message ChangeUserRecordRequest{
+  Token token = 1;
+  UserRecord user_record = 2;
+}
+
+message ChangeUserRecordResponse{
+}
+
+message DeleteUserRecordRequest{
+  Token token = 1;
+  int32 id = 2;
+}
+
+message DeleteUserRecordResponse{
+}
+
+service GophKeeper {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+
+  rpc GetUserRecords(GetUserRecordsRequest) returns (GetUserRecordsResponse);
+  rpc GetUserRecord(GetUserRecordRequest) returns (GetUserRecordResponse);
+  rpc ChangeUserRecord(ChangeUserRecordRequest) returns (ChangeUserRecordResponse);
+  rpc DeleteUserRecord(DeleteUserRecordRequest) returns (DeleteUserRecordResponse);
+
+  rpc AddLoginPassword(AddLoginPasswordRequest) returns(AddLoginPasswordResponse);
+  rpc GetLoginPassword(GetLoginPasswordRequest) returns(GetLoginPasswordResponse);
+  rpc ChangeLoginPassword(ChangeLoginPasswordRequest) returns(ChangeLoginPasswordResponse);
+
+  rpc AddBankCard(AddBankCardRequest) returns(AddBankCardResponse);
+  rpc GetBankCard(GetBankCardRequest) returns(GetBankCardResponse);
+  rpc ChangeBankCard(ChangeBankCardRequest) returns(ChangeBankCardResponse);
+
+  rpc AddText(AddTextRequest) returns(AddTextResponse);
+  rpc GetText(GetTextRequest) returns(GetTextResponse);
+  rpc ChangeText(ChangeTextRequest) returns(ChangeTextResponse);
+
+  rpc AddBytes(AddBytesRequest) returns(AddBytesResponse);
+  rpc GetBytes(GetBytesRequest) returns(GetBytesResponse);
+  rpc ChangeBytes(ChangeBytesRequest) returns(ChangeBytesResponse);
+}
